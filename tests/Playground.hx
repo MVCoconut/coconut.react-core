@@ -19,19 +19,23 @@ class Playground {
 
 class CoconutView extends View<{}> {
   
-  @:state var counter:Int = 0;
+  @:state var inner:Int = 0;
+  @:state var outer:Int = 0;
   var renderCount = 0;
   function render() 
     return div({}, [
-	  span({}, ['Hello Coconut! ${id} ${renderCount++}']),
+	  span({}, ['Hello Coconut! #${id} ${renderCount++} ${outer}']),
 	  coconut.ui.tools.ViewCache.create(
-		new TextView(coconut.ui.macros.HXX.merge({ key: this, value: Std.string(counter)}))
+		new TextView(coconut.ui.macros.HXX.merge({ key: this, value: Std.string(inner)}))
 	  )
 	]);
   
   override function init() {
     var timer = new haxe.Timer(500);
-    timer.run = function() counter = counter + 1;
+    timer.run = function() {
+	  inner++;
+	  outer = inner >> 2;
+	}
   }
     
 }
