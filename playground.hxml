@@ -1,0 +1,6 @@
+-cp tests
+-main Playground
+-js bin/playground/index.js
+-lib coconut.react
+-lib react
+-D react_global

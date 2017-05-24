@@ -1,0 +1,17 @@
+{
+  "name": "coconut.react",
+  "license": "MIT",
+  "tags": [
+    "coconut",
+    "react"
+  ],
+  "classPath": "src",
+  "contributors": [
+    "kevinresol"
+  ],
+  "releasenote": "initial release",
+  "version": "0.0.0",
+  "dependencies": {
+    "coconut.ui": ""
+  }
+}
