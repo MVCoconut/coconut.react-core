@@ -25,13 +25,16 @@ class CoconutView extends View<{}> {
 			"$$typeof": untyped __js__('Symbol.for("react.element")'),
 			type: 'div',
 			props: {
-				children: {
-					"$$typeof": untyped __js__('Symbol.for("react.element")'),
-					type: 'span',
-					props: {
-						children: 'Hello, Coconut! ($counter)',
-					}
-				}
+				children: [
+					untyped {
+						"$$typeof": untyped __js__('Symbol.for("react.element")'),
+						type: 'span',
+						props: {
+							children: 'Hello Coconut!',
+						}
+					},
+					new TextView({value: Std.string(counter)}).render({value: Std.string(counter)})
+				]
 			},
 			key: null,
 			ref: null,
@@ -43,4 +46,26 @@ class CoconutView extends View<{}> {
 		timer.run = function() counter = counter + 1;
 	}
 		
+}
+
+class TextView extends View<{value:String}> {
+	function render() {
+		return {
+			"$$typeof": untyped __js__('Symbol.for("react.element")'),
+			type: 'div',
+			props: {
+				children: {
+					"$$typeof": untyped __js__('Symbol.for("react.element")'),
+					type: 'span',
+					props: {
+						children: value,
+					}
+				}
+			},
+			key: null,
+			ref: null,
+		}
+	}
+	
+	
 }
