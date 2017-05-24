@@ -24,7 +24,9 @@ class CoconutView extends View<{}> {
   function render() 
     return div({}, [
 	  span({}, ['Hello Coconut!']),
-	  new TextView({value: Std.string(counter)}),
+	  coconut.ui.tools.ViewCache.create(
+		new TextView(coconut.ui.macros.HXX.merge({ key: this, value: Std.string(counter)}))
+	  )
 	]);
   
   override function init() {
@@ -37,6 +39,6 @@ class CoconutView extends View<{}> {
 class TextView extends View<{value:String}> {
   function render() 
     return div({}, [
-      span({}, [value])
+      span({}, ['TextView #$id - ', value])
     ]);
 }
