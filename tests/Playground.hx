@@ -20,10 +20,10 @@ class Playground {
 class CoconutView extends View<{}> {
   
   @:state var counter:Int = 0;
-  
+  var renderCount = 0;
   function render() 
     return div({}, [
-	  span({}, ['Hello Coconut!']),
+	  span({}, ['Hello Coconut! ${id} ${renderCount++}']),
 	  coconut.ui.tools.ViewCache.create(
 		new TextView(coconut.ui.macros.HXX.merge({ key: this, value: Std.string(counter)}))
 	  )
