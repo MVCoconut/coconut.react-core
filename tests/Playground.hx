@@ -1,18 +1,16 @@
 package;
 
-import coconut.react.Wrapper;
 import coconut.ui.View;
 import coconut.react.Dom.*;
 import coconut.Ui.hxx;
 import js.Browser.*;
 import react.React;
 import react.ReactDOM;
-import react.ReactMacro.jsx;
 
 class Playground {
   static function main() {
     
-    ReactDOM.render(jsx('<Wrapper view=${new CoconutView({})}/>'), document.getElementById('app'));
+    ReactDOM.render(cast new CoconutView({}).reactify(), document.getElementById('app'));
     
   }
 }
@@ -24,18 +22,18 @@ class CoconutView extends View<{}> {
   var renderCount = 0;
   function render() 
     return div({}, [
-	  span({}, ['Hello Coconut! #${id} ${renderCount++} ${outer}']),
-	  coconut.ui.tools.ViewCache.create(
-		new TextView(coconut.ui.macros.HXX.merge({ key: this, value: Std.string(inner)}))
-	  )
-	]);
+      span({}, ['Hello Coconut! #${id} ${renderCount++} ${outer}']),
+      coconut.ui.tools.ViewCache.create(
+        new TextView(coconut.ui.macros.HXX.merge({ key: this, value: Std.string(inner)}))
+      )
+  ]);
   
   override function init() {
-    var timer = new haxe.Timer(500);
-    timer.run = function() {
-	  inner++;
-	  outer = inner >> 2;
-	}
+    var timer = new haxe.Timer(250);
+      timer.run = function() {
+      inner++;
+      outer = inner >> 2;
+    }
   }
     
 }

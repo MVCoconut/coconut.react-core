@@ -1,23 +1,12 @@
 package coconut.react;
 
-import react.ReactComponent.ReactElement;
-import react.ReactMacro.jsx;
-
-abstract Child(Dynamic) from ReactElement from String from Int from Float from Bool {
-
-  @:from static function ofView(view:coconut.ui.BaseView):Child {
-    return jsx('<Wrapper key=${view.id} view=${view} />');
-  }
-
-}
-
 @:native('Object')
-extern class ES6Object {
+extern private class ES6Object {
   static function assign(rest:haxe.extern.Rest<Dynamic>):Dynamic;
 }
 
 class Dom {
-  static function props(attr, children:Array<Child>):Dynamic {
+  static function props(attr, children:Array<ReactChild>):Dynamic {
     var ret:Dynamic = ES6Object.assign(
       attr, 
       if (children != null) { children: children } else null
@@ -26,10 +15,10 @@ class Dom {
     return ret;
   }
 
-  static public function node(tag:String, attr:Dynamic, children:Array<Child>):ReactElement
+  static public function node(tag:haxe.extern.EitherType<String, Class<Dynamic>>, attr:Dynamic, ?children):ReactElement
     return {
       "$$typeof": untyped __js__('Symbol.for("react.element")'),
-      type: 'div',
+      type: tag,
       key: attr.key,
       props: props(attr, children),
     }
