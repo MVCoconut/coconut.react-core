@@ -29,7 +29,7 @@ class Dom {
 
   static public function node(type:CreateElementType, attr:Dynamic, children:Array<Child>):ReactElement
     return {
-      "$$typeof": untyped __js__('Symbol.for("react.element")'),
+      "$$typeof": untyped __js__("$$tre"), // defined in ReactComponent
       type: type,
       key: attr.key,
       props: props(attr, children),
