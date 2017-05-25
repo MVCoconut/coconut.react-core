@@ -15,10 +15,10 @@ class Dom {
     return ret;
   }
 
-  static public function node(tag:haxe.extern.EitherType<String, Class<Dynamic>>, attr:Dynamic, ?children):ReactElement
+  static public function node(type:CreateElementType, attr:Dynamic, children:Array<Child>):ReactElement
     return {
-      "$$typeof": untyped __js__('Symbol.for("react.element")'),
-      type: tag,
+      "$$typeof": untyped __js__("$$tre"), // defined in ReactComponent
+      type: type,
       key: attr.key,
       props: props(attr, children),
     }
