@@ -2,6 +2,7 @@ package coconut.react;
 
 import react.ReactComponent.ReactElement;
 import react.ReactMacro.jsx;
+import react.React;
 
 abstract Child(Dynamic) from ReactElement from String from Int from Float from Bool {
 
@@ -26,10 +27,10 @@ class Dom {
     return ret;
   }
 
-  static public function node(tag:String, attr:Dynamic, children:Array<Child>):ReactElement
+  static public function node(type:CreateElementType, attr:Dynamic, children:Array<Child>):ReactElement
     return {
-      "$$typeof": untyped __js__('Symbol.for("react.element")'),
-      type: 'div',
+      "$$typeof": untyped __js__("$$tre"), // defined in ReactComponent
+      type: type,
       key: attr.key,
       props: props(attr, children),
     }
