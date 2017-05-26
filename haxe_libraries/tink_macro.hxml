@@ -1,5 +1,5 @@
-# @install: lix --silent download haxelib:tink_macro#0.13.5 into tink_macro/0.13.5/haxelib
+# @install: lix --silent download https://github.com/haxetink/tink_macro/archive/04f86ce341d2f9ddd94ca23bc550d2ccd4544630.tar.gz into tink_macro/0.13.5/github/04f86ce341d2f9ddd94ca23bc550d2ccd4544630
 -D tink_macro=0.13.5
--cp ${HAXESHIM_LIBCACHE}/tink_macro/0.13.5/haxelib/src
+-cp ${HAXESHIM_LIBCACHE}/tink_macro/0.13.5/github/04f86ce341d2f9ddd94ca23bc550d2ccd4544630/src
 
 -lib tink_core

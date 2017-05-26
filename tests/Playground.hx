@@ -1,52 +1,61 @@
 package;
 
-import coconut.react.Wrapper;
 import coconut.ui.View;
-import coconut.react.Dom.*;
+import coconut.react.*;
 import coconut.Ui.hxx;
 import js.Browser.*;
-import react.React;
-import react.ReactDOM;
-import react.ReactComponent;
-import react.ReactMacro.jsx;
 
 class Playground {
   static function main() {
-    
-    ReactDOM.render(jsx('<Wrapper view=${new CoconutView({})}/>'), document.getElementById('app'));
-    
+    new CoconutView({}).mountInto(document.getElementById('app'));
   }
+  
 }
 
 class CoconutView extends View<{}> {
   
-  @:state var counter:Int = 0;
+  @:state var inner:Int = 0;
+  @:state var outer:Int = 42;
   var renderCount = 0;
-  function render() 
-    return div({}, [
-      span({}, ['Hello Coconut! ${id} ${renderCount++}']),
-      node(ReactTextView, {value:'Hello React! $counter'}, []),
-      coconut.ui.tools.ViewCache.create(
-        new TextView(coconut.ui.macros.HXX.merge({ key: this, value: Std.string(counter)}))
-      )
-    ]);
+
+  function render() '
+    <div>
+      <span>Hello Coconut! {id} {renderCount++}</span>
+      <ReactTextView value="Hello React! $outer" />
+      <TextView key={this} value={Std.string(inner)} />
+    </div>
+  ';
   
   override function init() {
     var timer = new haxe.Timer(500);
-    timer.run = function() counter = counter + 1;
-}
+    timer.run = function() {
+      inner++;
+      if (inner % 4 == 0)
+        outer--;    
+    }
+  }
     
 }
 
 class TextView extends View<{value:String}> {
-  function render() 
-    return div({}, [
-      span({}, ['TextView #$id - ', value])
-    ]);
+  function render() '
+    <div>
+      <span>
+        TextView #{id} - {value}
+        <if {value == "foo"}>
+          <div />
+        <else>
+          <div />
+        </if>
+      </span>
+    </div>
+  ';
 }
 
-class ReactTextView extends ReactComponent {
+class ReactTextView extends ReactComponent<{ value: String }, {}> {
   override function render() {
-    return jsx('<div>${props.value}</div>');
+    return coconut.react.React.createElement(
+      'div', {}, [props.value]
+    );
   }
 }

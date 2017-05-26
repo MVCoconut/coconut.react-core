@@ -2,3 +2,4 @@
 -cp src
 -lib coconut.data
 -lib coconut.ui
+extraParams.hxml
