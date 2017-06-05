@@ -68,11 +68,11 @@ private class Wrapper extends ReactComponent<
   function new(props) {
     super(props);
     
-    @:privateAccess {
-      state = { view: props.rendered.value };
-      props.rendered.bind(function(r) setState(function (_, _) return { view: r }));
-    }
+    state = { view: @:privateAccess props.rendered.value };
   }
+  
+  override function componentWillMount()
+      @:privateAccess props.rendered.bind(function(r) setState(function (_, _) return { view: r }));
   
   override function render():ReactElement 
     return this.state.view;
