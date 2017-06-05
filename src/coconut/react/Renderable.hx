@@ -34,6 +34,7 @@ class Renderable {
   function span(attr:{ ?key: Dynamic }, ?children)
     return React.createElement('span', attr, children);
 
+  #if !react_native
   public function mountInto(container:Element): { function unmount():Bool; } {
     ReactDom.render(
       reactify(), 
@@ -43,9 +44,10 @@ class Renderable {
       unmount: function () return ReactDom.unmountComponentAtNode(container),
     }
   }
-  
+  #end
 }
 
+#if !react_native
 #if react
 private typedef ReactDom = react.ReactDOM;
 #else
@@ -55,6 +57,7 @@ private extern class ReactDom {
   static function render(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
   static function unmountComponentAtNode(container:Element):Bool;
 }
+#end
 #end
 
 private class Wrapper extends ReactComponent<

@@ -2,7 +2,7 @@ package coconut.react;
 
 @:build(coconut.react.macros.Setup.tags())
 #if react
-class ReactComponent<Props, State> extends react.ReactComponent.ReactComponentOfPropsAndState<Props, State> {}
+typedef ReactComponent<Props, State> = react.ReactComponent.ReactComponentOfPropsAndState<Props, State>;
 #else
 @:native('React.Component')
 extern class ReactComponent<Props, State> {
