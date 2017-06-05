@@ -5,6 +5,8 @@ import tink.state.Observable;
 import js.html.Element;
 import coconut.react.*;
 
+using tink.CoreApi;
+
 class Renderable {
   var __rendered:Observable<RenderResult>;
   var __wrapper:ReactElement;
@@ -65,6 +67,8 @@ private class Wrapper extends ReactComponent<
   { view: RenderResult }
 > { 
   
+  var link:CallbackLink;
+  
   function new(props) {
     super(props);
     
@@ -72,7 +76,13 @@ private class Wrapper extends ReactComponent<
   }
   
   override function componentWillMount()
-      @:privateAccess props.rendered.bind(function(r) setState(function (_, _) return { view: r }));
+      link = @:privateAccess props.rendered.bind(function(r) setState(function (_, _) return { view: r }));
+  
+  override function componentWillUnmount()
+      if(link != null) {
+        link.dissolve();
+        link = null;
+      }
   
   override function render():ReactElement 
     return this.state.view;
