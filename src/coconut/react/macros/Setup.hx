@@ -25,7 +25,10 @@ class Setup {
               var props = tink.hxx.Generator.applySpreads(cl.attr, macro tink.hxx.Merge.objects, function (f) {
                 switch cl.children {
                   case Some(v):
-                    f.push({ field: 'children', expr: v });   
+                    f.push({ field: 'children', expr: switch v.expr {
+                      case EArrayDecl([single]): single;
+                      case _: v;
+                    }});
                   default:
                 }
               });
