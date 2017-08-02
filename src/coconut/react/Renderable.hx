@@ -20,8 +20,8 @@ class Renderable {
 
   public function reactify():RenderResult {
     if (this.__wrapper == null)
-      this.__wrapper = React.createComponent(Wrapper, {
-        // key: untyped this.id,
+      this.__wrapper = React.createComponent(Wrapper, untyped {
+        key: this.id,
         rendered: __rendered,
       });
     return this.__wrapper;
@@ -30,7 +30,7 @@ class Renderable {
   // inline function __make(tag:CreateElementType, attr:Dynamic, ?children:Array<ReactChild>)
     // return React.createElement(tag, attr, children);
 
-  function div(attr:{}, ?children)
+  function div(attr:{}, ?children)//TODO: this does not belong here at all
     return React.createElement('div', attr, children);
 
   function span(attr:{ ?key: Dynamic }, ?children)
