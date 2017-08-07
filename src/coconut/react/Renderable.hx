@@ -23,9 +23,16 @@ class Renderable {
       this.__wrapper = React.createComponent(Wrapper, untyped {
         key: this.id,
         rendered: __rendered,
+        componentDidMount: componentDidMount,
+        componentWillMount: componentWillMount,
+        componentWillUnmount: componentWillUnmount,
       });
     return this.__wrapper;
   }
+  
+  function componentDidMount() {}
+  function componentWillMount() {}
+  function componentWillUnmount() {}
 
   // inline function __make(tag:CreateElementType, attr:Dynamic, ?children:Array<ReactChild>)
     // return React.createElement(tag, attr, children);
@@ -63,7 +70,12 @@ private extern class ReactDom {
 #end
 
 private class Wrapper extends ReactComponent<
-  { rendered: Observable<RenderResult> }, 
+  { 
+    rendered: Observable<RenderResult>,
+    componentWillMount:Void->Void,
+    componentWillUnmount:Void->Void,
+    componentDidMount:Void->Void,
+  }, 
   { view: RenderResult }
 > { 
   
@@ -75,14 +87,22 @@ private class Wrapper extends ReactComponent<
     state = { view: @:privateAccess props.rendered.value };
   }
   
-  override function componentWillMount()
-      link = @:privateAccess props.rendered.bind(function(r) setState(function (_, _) return { view: r }));
+  override function componentDidMount() {
+    props.componentDidMount();
+  }
   
-  override function componentWillUnmount()
-      if(link != null) {
-        link.dissolve();
-        link = null;
-      }
+  override function componentWillMount() {
+    link = @:privateAccess props.rendered.bind(function(r) setState(function (_, _) return { view: r }));
+    props.componentWillMount();
+  }
+  
+  override function componentWillUnmount() {
+    if(link != null) {
+      link.dissolve();
+      link = null;
+    }
+    props.componentWillUnmount();
+  }
   
   override function render():ReactElement 
     return this.state.view;
