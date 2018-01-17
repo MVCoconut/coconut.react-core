@@ -2,46 +2,32 @@ package coconut.react.macros;
 
 #if macro
 import haxe.macro.Context;
+import haxe.macro.Expr;
+import tink.hxx.*;
 using tink.MacroApi;
+using tink.CoreApi;
+
+private class Generator extends coconut.ui.macros.Generator {
+  override function instantiate(name:StringAt, isClass:Bool, key:Option<Expr>, attr:Expr, children:Option<Expr>)
+    return 
+      if (isClass) {
+        var react = macro @:pos(name.pos) coconut.react.React.createComponent(
+          $i{name.value}, $attr
+        );
+        if (react.typeof().isSuccess()) react;
+        else super.instantiate(name, isClass, key, attr, children);
+      }
+      else super.instantiate(name, isClass, key, attr, children);
+}
+
 class Setup {
   
-  static var defined = false;
+  static var generator = new Generator();
   static function tags() {
     return null;
   }
   static function all() {
-    
-    #if coconut_ui
-    if (!defined) {    
-      defined = true;
-      coconut.ui.macros.HXX.options = {
-        child: macro : coconut.react.ReactChild,
-        instantiate: function (cl) {
-          
-          return 
-            if (Context.unify(cl.type, Context.getType('coconut.react.ReactComponent'))) {
-              // trace(cl.children);
-              // cl.attr.log();
-              var props = tink.hxx.Generator.applySpreads(cl.attr, macro tink.hxx.Merge.objects, function (f) {
-                switch cl.children {
-                  case Some(v):
-                    f.push({ field: 'children', expr: switch v.expr {
-                      case EArrayDecl([single]): single;
-                      case _: v;
-                    }});
-                  default:
-                }
-              });
-              Some(macro @:pos(cl.name.pos) coconut.react.React.createComponent(
-                $i{cl.name.value}, $props
-              ));
-              //cl.name.pos.error('react view');
-            }
-            else None;          
-        }
-      };
-    }
-    #end
+    coconut.ui.macros.HXX.generator = generator;
   }
 }
 #end

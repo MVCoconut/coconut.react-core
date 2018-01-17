@@ -1,6 +1,6 @@
 {
     "version": "0.1.0",
     "command": "haxe",
-    "args": ["playground.hxml"],
+    "args": ["playground.hxml", "--times"],
     "problemMatcher": "$haxe"
 }

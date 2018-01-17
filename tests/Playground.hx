@@ -7,12 +7,12 @@ import js.Browser.*;
 
 class Playground {
   static function main() {
-    new CoconutView({}).mountInto(document.getElementById('app'));
+    // new CoconutView({}).mountInto(document.getElementById('app'));
   }
   
 }
 
-class CoconutView extends View<{}> {
+class CoconutView extends View {
   
   @:state var inner:Int = 0;
   @:state var outer:Int = 42;
@@ -37,7 +37,8 @@ class CoconutView extends View<{}> {
     
 }
 
-class TextView extends View<{value:String}> {
+class TextView extends View {
+  @:attribute var value:String;
   function render() '
     <div>
       <span>
