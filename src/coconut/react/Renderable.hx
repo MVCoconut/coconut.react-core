@@ -21,7 +21,7 @@ class Renderable {
   public function reactify():RenderResult {
     if (this.__wrapper == null)
       this.__wrapper = React.createComponent(Wrapper, untyped {
-        key: this.id,
+        key: this.viewId,
         rendered: __rendered,
         componentWillMount: componentWillMount,
         componentDidMount: componentDidMount,

@@ -7,7 +7,7 @@ import js.Browser.*;
 
 class Playground {
   static function main() {
-    // new CoconutView({}).mountInto(document.getElementById('app'));
+    hxx('<CoconutView />').mountInto(document.getElementById('app'));
   }
   
 }
@@ -20,7 +20,7 @@ class CoconutView extends View {
 
   function render() '
     <div>
-      <span>Hello Coconut! {id} {renderCount++}</span>
+      <span>Hello Coconut! {viewId} {renderCount++}</span>
       <ReactTextView value="Hello React! $outer" />
       <TextView key={this} value={Std.string(inner)} />
     </div>
@@ -42,7 +42,7 @@ class TextView extends View {
   function render() '
     <div>
       <span>
-        TextView #{id} - {value}
+        TextView #{viewId} - {value}
         <if {value == "foo"}>
           <div />
         <else>
