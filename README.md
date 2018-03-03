@@ -1,5 +1,7 @@
 # Coconut React Renderer
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MVCoconut/Lobby)
+
 Render Coconut apps through React.
 
 Requires external component definitions such as [haxe-react-native](https://github.com/haxe-react/haxe-react-native)
