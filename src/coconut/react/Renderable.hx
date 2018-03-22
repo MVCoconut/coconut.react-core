@@ -1,5 +1,6 @@
 package coconut.react;
 
+#if !macro
 import coconut.ui.RenderResult;
 import tink.state.Observable;
 import js.html.Element;
@@ -39,6 +40,8 @@ class Renderable {
   // inline function __make(tag:CreateElementType, attr:Dynamic, ?children:Array<ReactChild>)
     // return React.createElement(tag, attr, children);
 
+  macro function hxx(e);
+  
   function div(attr:{}, ?children)//TODO: this does not belong here at all
     return React.createElement('div', attr, children);
 
@@ -113,4 +116,16 @@ private class Wrapper extends ReactComponent<
   
   override function render():ReactElement 
     return this.state.view;
+    
 }
+#else
+class Renderable {
+  macro function hxx(_, e) {
+    #if coconut_ui
+    return coconut.ui.macros.HXX.parse(e);
+    #else
+      #error 'Requires coconut.ui';
+    #end
+  }
+}
+#end
