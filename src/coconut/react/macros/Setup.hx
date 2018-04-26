@@ -12,13 +12,13 @@ private class Generator extends coconut.ui.macros.Generator {
     return 
       if (isClass) {
         
-        function react(attr)
-          return macro @:pos(name.pos) coconut.react.React.createComponent(
-            $i{name.value}, $attr
-          );
-        
-        switch react(macro null).typeof() {
-          case Success(_): react(attr);
+        switch (macro coconut.react.React.createComponent($i{name.value}, null)).typeof() {
+          case Success(_): macro @:pos(name.pos) {
+            var props = $attr;
+            var children = untyped __js__('{0}.children || []', props);
+            untyped __js__('delete {0}.children', props);
+            coconut.react.React.createElement(cast $i{name.value}, props, untyped __js__('...{0}', children));
+          }
           case Failure(e): super.instantiate(name, isClass, key, attr, children);
         }
       }
