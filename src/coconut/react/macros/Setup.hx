@@ -17,7 +17,7 @@ private class Generator extends coconut.ui.macros.Generator {
             var props = $attr;
             var children = untyped __js__('{0}.children || []', props);
             untyped __js__('delete {0}.children', props);
-            coconut.react.React.createElement(cast $i{name.value}, props, untyped __js__('...{0}', children));
+            coconut.react.React.createElement(cast $i{name.value}, props, untyped __js__('...{0}', @:privateAccess coconut.react.ReactChild._flatten(children)));
           }
           case Failure(e): super.instantiate(name, isClass, key, attr, children);
         }
