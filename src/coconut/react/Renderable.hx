@@ -2,7 +2,6 @@ package coconut.react;
 
 import coconut.ui.RenderResult;
 import tink.state.*;
-import react.*;
 
 using tink.CoreApi;
 
@@ -108,10 +107,10 @@ class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Ren
     });
   }
 
-  @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
+  @:final @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
     return state.vtree.get() != next.vtree.get();
 
-  @:noCompletion @:native('render') function reactRender()
+  @:final @:noCompletion @:native('render') function reactRender()
     return this.state.vtree.get();
 }
 

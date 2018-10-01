@@ -18,7 +18,6 @@ class Setup {
 
     function infer() {
       var type = TPath(cls.name.asTypePath([for (p in cls.params) TPType(p.name.asComplexType())]));
-      // throw type.toString();
       var props = switch (macro (null:$type).props).typeof().sure() {
         case TDynamic(null): macro : Dynamic;
         case t: [
@@ -28,8 +27,7 @@ class Setup {
           }
         ].intersect().sure();
       }
-      // trace(props.toString());
-      return macro (props : $props);
+      return (macro (props : $props));
     }
 
     var add = (macro class {
@@ -51,7 +49,6 @@ class Setup {
           }
         }
       ];
-      
     }
 
     return fields.concat(add);
@@ -101,7 +98,9 @@ class Setup {
         });
       }
 
+      #if react_devtools
       ctx.target.getConstructor().addStatement(macro this.__stateMap = $stateMap);
+      #end
       ctx.target.addMembers(macro class {
         #if react_devtools
         @:keep @:noCompletion var __stateMap:{};
