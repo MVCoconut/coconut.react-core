@@ -1,116 +1,124 @@
 package coconut.react;
 
 import coconut.ui.RenderResult;
-import tink.state.Observable;
-import js.html.Element;
-import coconut.react.*;
+import tink.state.*;
+import react.*;
 
 using tink.CoreApi;
 
-class Renderable {
-  var __rendered:Observable<RenderResult>;
-  var __wrapper:ReactElement;
+private typedef Render = Lazy<RenderResult>;//without this some part of the react component macro seems to hang
+
+@:ignore_empty_render
+class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Render }> {//consider *not* deriving this from ReactComponent but instead add `isReactComponent = {}`
   
-  public function new(rendered, ?key) {
-    __rendered = rendered;
-    init();
-  }
-  
-  function init() {}
+  @:noCompletion var __link:CallbackLink;
+  @:noCompletion var __viewMounted:Void->Void;
+  @:noCompletion var __viewUpdated:Void->Void;
+  @:noCompletion var __viewUnmounting:Void->Void;
 
-  public function reactify():RenderResult {
-    if (this.__wrapper == null)
-      this.__wrapper = React.createComponent(Wrapper, untyped {
-        key: this.viewId,
-        rendered: __rendered,
-        componentWillMount: componentWillMount,
-        componentDidMount: componentDidMount,
-        componentDidUpdate: componentDidUpdate,
-        componentWillUnmount: componentWillUnmount,
-      });
-    return this.__wrapper;
-  }
-  
-  function componentWillMount() {}
-  function componentDidMount() {}
-  function componentDidUpdate() {}
-  function componentWillUnmount() {}
+  public function new(
+    rendered:Observable<RenderResult>,
+    mounted:Void->Void,
+    updated:Void->Void,
+    unmounting:Void->Void
+  ) {
 
-  // inline function __make(tag:CreateElementType, attr:Dynamic, ?children:Array<ReactChild>)
-    // return React.createElement(tag, attr, children);
+    super();
 
-  function div(attr:{}, ?children)//TODO: this does not belong here at all
-    return React.createElement('div', attr, children);
-
-  function span(attr:{ ?key: Dynamic }, ?children)
-    return React.createElement('span', attr, children);
-
-  #if !react_native
-  public function mountInto(container:Element): { function unmount():Bool; } {
-    ReactDom.render(
-      reactify(), 
-      container
-    );
-    return {
-      unmount: function () return ReactDom.unmountComponentAtNode(container),
-    }
-  }
-  #end
-}
-
-#if !react_native
-#if react
-private typedef ReactDom = react.ReactDOM;
-#else
-
-@:native('ReactDOM')
-private extern class ReactDom {
-  static function render(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
-  static function unmountComponentAtNode(container:Element):Bool;
-}
-#end
-#end
-
-private class Wrapper extends ReactComponent<
-  { 
-    rendered: Observable<RenderResult>,
-    componentWillMount:Void->Void,
-    componentDidMount:Void->Void,
-    componentDidUpdate:Void->Void,
-    componentWillUnmount:Void->Void,
-  }, 
-  { view: RenderResult }
-> { 
-  
-  var link:CallbackLink;
-  
-  function new(props) {
-    super(props);
+    function mk():{ vtree: Render }
+      return { vtree: function () return rendered.value };
     
-    state = { view: @:privateAccess props.rendered.value };
+    this.state = mk();
+    __link = rendered.bind(function (_) setState(mk()));//not my most glorious moment ... also should probably be moved into componentDidMount
+
+    this.__viewMounted = mounted;
+    this.__viewUpdated = updated;
+    this.__viewUnmounting = unmounting;
   }
-  
-  override function componentWillMount() {
-    link = @:privateAccess props.rendered.bind(function(r) setState(function (_, _) return { view: r }));
-    props.componentWillMount();
+
+  @:noCompletion @:final override function componentDidMount() {
+    if (__viewMounted != null) __viewMounted();
   }
-  
-  override function componentDidMount() {
-    props.componentDidMount();
+    
+  @:noCompletion @:final override function componentDidUpdate(_, _) {
+    if (__viewUpdated != null) __viewUpdated();
   }
-  
-  override function componentDidUpdate(_, _) {
-    props.componentDidUpdate();
+
+  @:noCompletion @:final override function componentWillUnmount() {
+    __link.dissolve();
+    if (__viewUnmounting != null) __viewUnmounting();
+  }  
+
+  static function __init__() {
+    #if react_devtools
+    js.Object.defineProperty(untyped Renderable.prototype, 'state', {
+      get: function () return js.Lib.nativeThis.__state,
+      set: function (arg:Dynamic) if (arg != null) {
+        
+        js.Lib.nativeThis.__state = arg;
+        
+        if (!arg.__subverted) {//Muahaha!
+          
+          js.Object.defineProperty(arg, '__subverted', {
+            enumerable: false,
+            value: true
+          });
+
+          js.Object.defineProperty(arg, 'vtree', {
+            enumerable: false,
+            value: arg.vtree
+          });
+
+          var states:haxe.DynamicAccess<Void->Dynamic> = js.Lib.nativeThis.__stateMap;
+
+          for (name in states.keys())
+            js.Object.defineProperty(arg, name, {
+              enumerable: true,
+              get: states[name]
+            });            
+        }
+      }
+    });
+    #end
+
+    js.Object.defineProperty(untyped Renderable.prototype, 'props', {
+      get: function () return js.Lib.nativeThis.__props,
+      set: function (attr:Dynamic) if (attr != null) {
+        js.Lib.nativeThis.__props = attr;
+        #if react_devtools
+        if (!attr.__cct) {
+          
+          var actual = Reflect.copy(attr);
+          
+          js.Object.defineProperty(attr, '__cct', {
+            value: actual,
+            enumerable: false,
+          });
+
+          for (field in Reflect.fields(actual))
+            js.Object.defineProperty(attr, field, {
+              get: function () return (Reflect.field(actual, field) : Observable<Dynamic>).value,
+              enumerable: true,
+            });
+        }
+        attr = attr.__cct;
+        #end
+        js.Lib.nativeThis.__initAttributes(attr);//TODO: unhardcode __initAtributes identifier
+      }
+    });
   }
-  
-  override function componentWillUnmount() {
-    if(link != null) {
-      link.dissolve();
-      link = null;
-    }
-    props.componentWillUnmount();
-  }
-  
-  override function render():ReactElement 
-    return this.state.view;
+
+  @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
+    return state.vtree.get() != next.vtree.get();
+
+  @:noCompletion @:native('render') function reactRender()
+    return this.state.vtree.get();
 }
+
+#if (haxe_ver >= 4)
+private typedef Object = js.Object;
+#else
+@:native('Object') extern class Object {
+  static function defineProperty(target:{}, name:String, descriptor:{}):Void;//Not very exact, but good enough
+}
+#end

@@ -1,5 +1,5 @@
 -D coconut.react
 -cp src
--lib coconut.data
 -lib coconut.ui
+-lib react
 extraParams.hxml

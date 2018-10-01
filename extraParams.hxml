@@ -1,2 +1,3 @@
 --macro coconut.react.macros.Setup.all()
 -D coconut_react
+-D react_ignore_empty_render

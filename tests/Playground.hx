@@ -1,62 +1,79 @@
 package;
 
 import coconut.ui.View;
-import coconut.react.*;
-import coconut.Ui.hxx;
+import react.*;
+import react.ReactComponent;
 import js.Browser.*;
 
 class Playground {
   static function main() {
-    hxx('<CoconutView />').mountInto(document.getElementById('app'));
+    ReactDOM.render(
+      coconut.Ui.hxx('<CoconutView />'),
+      cast document.body.appendChild(document.createDivElement())
+    );       
+
+    ReactDOM.render(
+      coconut.Ui.hxx('<ReactView />'),
+      cast document.body.appendChild(document.createDivElement())
+    );    
   }
   
 }
 
 class CoconutView extends View {
   
-  @:state var inner:Int = 0;
-  @:state var outer:Int = 42;
-  var renderCount = 0;
+  @:state var a:Int = 0;
+  @:tracked @:state var b:Int = 0;
+  @:state var c:Int = 0;
 
-  function render() '
-    <div>
-      <span>Hello Coconut! {viewId} {renderCount++}</span>
-      <ReactTextView value="Hello React! $outer" />
-      <TextView key={this} value={Std.string(inner)} />
-    </div>
-  ';
-  
-  override function init() {
-    var timer = new haxe.Timer(500);
-    timer.run = function() {
-      inner++;
-      if (inner % 4 == 0)
-        outer--;    
-    }
-  }
+  function inca() a++;
+  function incb() b++;
+
+  static function getDerivedStateFromAttributes()
+    return { c: previous.c + 1 }; 
     
-}
-
-class TextView extends View {
-  @:attribute var value:String;
   function render() '
     <div>
-      <span>
-        TextView #{viewId} - {value}
-        <if {value == "foo"}>
-          <div />
-        <else>
-          <div />
-        </if>
-      </span>
+      <h3>Coconut React</h3>
+      <CoconutCounter count=${a} onclick=${inca} />
+      <CoconutCounter count=${b} onclick=${incb} />
+      <button onClick=${c++}>${c}</button>
     </div>
   ';
 }
 
-class ReactTextView extends ReactComponent<{ value: String }, {}> {
-  override function render() {
-    return coconut.react.React.createElement(
-      'div', {}, [props.value]
-    );
+class CoconutCounter extends View {
+  @:attribute var count:Int;
+  @:attribute function onclick():Void;
+
+  function render() '
+    <button onclick=${onclick}>${count}</button>
+  ';
+
+}
+
+class ReactView extends ReactComponentOfState<{ ?a:Int, ?b: Int, ?c:Int }> {
+  public function new(props) {
+    super(props);
+    this.state = { a: 0, b: 0, c: 0 };
   }
+
+  function inca() setState({ a: state.a + 1 });
+  function incb() setState({ b: state.b + 1 });
+
+  override function render() return coconut.Ui.hxx('
+    <div>
+      <h3>Pure React</h3>
+      <ReactCounter count=${state.a} onclick=${inca} />
+      <ReactCounter count=${state.b} onclick=${incb} />
+      <button onclick=${setState({ c: state.c + 1})}>${state.c}</button>
+    </div>
+  ');
+}
+
+class ReactCounter extends ReactComponentOfProps<{ var count:Int; function onclick():Void; }> {
+  
+  override function render() return coconut.Ui.hxx('
+    <button onclick=${props.onclick()}>${props.count}</button>
+  ');
 }
