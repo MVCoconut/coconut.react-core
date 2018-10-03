@@ -7,6 +7,9 @@ import js.Browser.*;
 
 class Playground {
   static function main() {
+    // var d:Dynamic<String> = {
+    //   'foo-bar': 5
+    // };
     ReactDOM.render(
       coconut.Ui.hxx('<CoconutView />'),
       cast document.body.appendChild(document.createDivElement())
@@ -47,7 +50,7 @@ class CoconutCounter extends View {
   @:attribute function onclick():Void;
 
   function render() '
-    <button onclick=${onclick}>${count}</button>
+    <button data-selected=${count > 2} onclick=${onclick}>${count}</button>
   ';
 
 }

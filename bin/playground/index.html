@@ -11,8 +11,10 @@
 <body>
 	
 	<div id="app"></div>
-	<script src="react.production.min.js"></script>
-	<script src="react-dom.production.min.js"></script>
+	<!-- <script src="react.production.min.js"></script> -->
+	<!-- <script src="react-dom.production.min.js"></script> -->
+	<script src="preact.min.js"></script>
+	<script>window.React = preact; window.ReactDOM = preact;</script>
 	<script src="index.js"></script>
 </body>
 

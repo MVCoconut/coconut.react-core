@@ -108,10 +108,13 @@ typedef ReactEvents<Target:Element> = {
   @:hxx(ontouchcancel) @:optional var onTouchCancel:Callback<EventFrom<Target, TouchEvent>>;
 }
 
+@:coreType abstract CustomAttr from String from Int from Bool from Float {}
+
 @:build(coconut.react.Html.build())
 #end
 class Html {
   #if macro
+  static var NAMELESS = '';
   static function build() {
     var ret = Context.getBuildFields();
     for (name in tags.keys()) {
@@ -134,6 +137,9 @@ class Html {
               macro : { 
                 @:optional var key(default, never):coconut.react.Key; 
                 @:optional var ref(default, never):$et->Void;
+                @:hxxCustomAttributes(~/^(aria-(selected|label))|(data-.*)$/)
+                @:optional var $NAMELESS(default, never):CustomAttr;
+
               },
               macro : ReactEvents<$et>,
             ].intersect().sure(),
