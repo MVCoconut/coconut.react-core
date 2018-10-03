@@ -125,8 +125,9 @@ class Html {
       var tag = tags[name];
       var et = tag.dom.toComplex();
 
+      #if xDOM
       et = macro : xdom.Wrapped<$et>;
-      
+      #end
       ret.push({
         name: name,
         pos: tag.pos,
