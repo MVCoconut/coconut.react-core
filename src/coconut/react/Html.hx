@@ -108,7 +108,10 @@ typedef ReactEvents<Target:Element> = {
   @:hxx(ontouchcancel) @:optional var onTouchCancel:Callback<EventFrom<Target, TouchEvent>>;
 }
 
-@:coreType abstract CustomAttr from String from Int from Bool from Float {}
+@:coreType abstract CustomAttr from String from Int from Float {
+  @:from static function ofBool(b:Bool):CustomAttr
+    return if (b != true) js.Lib.undefined else ''; 
+}
 
 @:build(coconut.react.Html.build())
 #end
