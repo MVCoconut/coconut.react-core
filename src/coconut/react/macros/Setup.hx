@@ -13,6 +13,15 @@ class Setup {
     var cls = Context.getLocalClass().get(),
         fields = Context.getBuildFields();
 
+    switch cls {
+      case { name: 'View', pack: ['coconut', 'ui'] }:
+        for (f in fields)
+          if (f.name == 'forceUpdate')
+            f.access.push(AOverride);
+        return fields;
+      default:
+    }
+
     for (f in fields)
       if (f.name == 'fromHxx') return null;
 
