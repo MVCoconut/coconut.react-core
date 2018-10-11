@@ -172,7 +172,7 @@ class Html {
   #else
   
   static public function raw(attr:RawAttr)
-    return h(switch attr.tag { case null: 'div'; case v: v; }, { className: attr.className, dangerouslySetInnerHTML: { __html: attr.content } });
+    return h(switch attr.tag { case null: 'span'; case v: v; }, { className: attr.className, dangerouslySetInnerHTML: { __html: attr.content } });
 
   static function h(tag:String, attr:Dynamic, ?children:Dynamic):react.ReactComponent.ReactSingleFragment
     return 

@@ -79,6 +79,10 @@ class Setup {
 
     coconut.ui.macros.ViewBuilder.afterBuild.whenever(function (ctx) {
       var cls = ctx.target.target;
+
+      for (m in ctx.target)
+        if (m.name == 'state')
+          m.pos.error('Name `state` is reserved in coconut.react. Consider using `currentState` instead.');
       
       var self = '${cls.module}.${cls.name}'.asComplexType([
         for (p in cls.params) TPType(p.name.asComplexType())
