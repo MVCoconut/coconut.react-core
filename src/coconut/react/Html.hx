@@ -8,9 +8,10 @@ using tink.MacroApi;
 
 import js.html.*;
 import tink.domspec.EventFrom;
+import tink.domspec.ClassName;
 import tink.core.Callback;
 
-typedef DomElement<E:js.html.Element> = react.ReactComponent.ReactElement;
+typedef DomElement<E:js.html.Element> = react.ReactComponent.ReactSingleFragment;
 
 typedef ReactEvents<Target:Element> = {
   @:hxx(onwheel) @:optional var onWheel:Callback<EventFrom<Target, WheelEvent>>;
@@ -169,9 +170,21 @@ class Html {
     return ret;
   }
   #else
-  static function h(tag:String, attr:Dynamic, ?children:Dynamic):react.ReactComponent.ReactElement
+  
+  static public function raw(attr:RawAttr)
+    return h(switch attr.tag { case null: 'div'; case v: v; }, { className: attr.className, dangerouslySetInnerHTML: { __html: attr.content } });
+
+  static function h(tag:String, attr:Dynamic, ?children:Dynamic):react.ReactComponent.ReactSingleFragment
     return 
-      if (children == null) react.React.createElement(tag, attr);
+      if (children == null) cast react.React.createElement(tag, attr);
       else (cast react.React.createElement).apply(null, [tag, attr].concat(children));
   #end
 }
+
+#if !macro
+typedef RawAttr = {
+  var content:String;
+  @:optional var tag:String;
+  @:optional var className:ClassName;
+}
+#end

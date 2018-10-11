@@ -1,3 +1,3 @@
 package coconut.ui;
 
-typedef RenderResult = react.ReactComponent.ReactFragment;
+typedef RenderResult = react.ReactComponent.ReactSingleFragment;

@@ -10,10 +10,12 @@ private typedef Render = Lazy<RenderResult>;//without this some part of the reac
 @:ignore_empty_render
 class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Render }> {//consider *not* deriving this from ReactComponent but instead add `isReactComponent = {}`
   
+  @:noCompletion var __rendered:Observable<RenderResult>;
   @:noCompletion var __link:CallbackLink;
   @:noCompletion var __viewMounted:Void->Void;
   @:noCompletion var __viewUpdated:Void->Void;
   @:noCompletion var __viewUnmounting:Void->Void;
+  @:noCompletion var __rewrapped:RenderResult;
 
   public function new(
     rendered:Observable<RenderResult>,
@@ -28,6 +30,8 @@ class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Ren
       return { vtree: function () return rendered.value };
     
     this.state = mk();
+
+    __rendered = rendered;
     __link = rendered.bind(function (_) setState(mk()));//not my most glorious moment ... also should probably be moved into componentDidMount
 
     this.__viewMounted = mounted;
@@ -47,6 +51,12 @@ class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Ren
     __link.dissolve();
     if (__viewUnmounting != null) __viewUnmounting();
   }  
+
+  public function reactify() {
+    if (__rewrapped == null)
+      __rewrapped = cast react.React.createElement(Rewrapped, { target: this });
+    return __rewrapped;
+  }
 
   static function __init__() {
     #if react_devtools
@@ -107,8 +117,8 @@ class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Ren
     });
   }
 
-  @:final @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
-    return state.vtree.get() != next.vtree.get();
+  // @:final @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
+  //   return state.vtree.get() != next.vtree.get();
 
   @:final @:noCompletion @:native('render') function reactRender()
     return this.state.vtree.get();
@@ -121,3 +131,23 @@ private typedef Object = js.Object;
   static function defineProperty(target:{}, name:String, descriptor:{}):Void;//Not very exact, but good enough
 }
 #end
+
+private class Rewrapped extends react.ReactComponent.ReactComponentOfProps<{ target: Renderable }> {
+  override function componentDidMount() 
+    props.target.componentDidMount();
+
+  override function componentDidUpdate(_, _) 
+    props.target.componentDidUpdate(null, null);
+
+  override function componentWillUnmount() 
+    props.target.componentWillUnmount();
+
+  var link:CallbackLink;
+
+  override function render() {
+    link.dissolve();
+    var ret = @:privateAccess props.target.__rendered.measure();
+    link = ret.becameInvalid.handle(function () forceUpdate());
+    return ret.value;
+  }
+}

@@ -114,8 +114,8 @@ class Setup {
         #if react_devtools
         @:keep @:noCompletion var __stateMap:{};
         #end
-        static public function fromHxx(attributes:$attributes) {
-          return react.React.createElement($i{ctx.target.target.name}, attributes);
+        static public function fromHxx(attributes:$attributes):coconut.react.ViewFragment<$self> {
+          return cast react.React.createElement($i{ctx.target.target.name}, attributes);
         }
       });
     });    
