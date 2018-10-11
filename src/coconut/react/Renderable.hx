@@ -26,20 +26,20 @@ class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Ren
 
     super();
 
-    function mk():{ vtree: Render }
-      return { vtree: function () return rendered.value };
-    
-    this.state = mk();
+    this.state = __snap();
 
     __rendered = rendered;
-    __link = rendered.bind(function (_) setState(mk()));//not my most glorious moment ... also should probably be moved into componentDidMount
 
     this.__viewMounted = mounted;
     this.__viewUpdated = updated;
     this.__viewUnmounting = unmounting;
   }
 
+  @:noCompletion function __snap():{ vtree: Render }
+    return { vtree: function () return __rendered.value };
+
   @:noCompletion @:final override function componentDidMount() {
+    __link = __rendered.bind(function (_) setState(__snap()));//not my most glorious moment ... a better solution would probably be to poll in render and forceUpdate when becameInvalid
     if (__viewMounted != null) __viewMounted();
   }
     
