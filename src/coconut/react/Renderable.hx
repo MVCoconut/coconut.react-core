@@ -98,6 +98,12 @@ class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Ren
         if (!attr.__cct) {
           
           var actual = Reflect.copy(attr);
+
+          for (f in Reflect.fields(actual)) {
+            var o:Observable.ObservableObject<Dynamic> = Reflect.field(actual, f);
+            if (!Reflect.isFunction(o.poll)) 
+              Reflect.setField(actual, f, Observable.const(o));
+          }
           
           js.Object.defineProperty(attr, '__cct', {
             value: actual,
