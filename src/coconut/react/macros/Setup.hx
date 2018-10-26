@@ -81,6 +81,10 @@ class Setup {
 
     coconut.ui.macros.ViewBuilder.afterBuild.whenever(function (ctx) {
       var cls = ctx.target.target;
+
+      for (m in ctx.target)
+        if (m.name == 'state')
+          m.pos.error('Name `state` is reserved in coconut.react. Consider using `currentState` instead.');
       
       var self = '${cls.module}.${cls.name}'.asComplexType([
         for (p in cls.params) TPType(p.name.asComplexType())
@@ -116,8 +120,8 @@ class Setup {
         #if react_devtools
         @:keep @:noCompletion var __stateMap:{};
         #end
-        static public function fromHxx(attributes:$attributes) {
-          return react.React.createElement($i{ctx.target.target.name}, attributes);
+        static public function fromHxx(attributes:$attributes):coconut.react.ViewFragment<$self> {
+          return cast react.React.createElement($i{ctx.target.target.name}, attributes);
         }
       });
     });    
