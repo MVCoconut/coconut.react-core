@@ -25,27 +25,53 @@ class Setup {
     for (f in fields)
       if (f.name == 'fromHxx') return null;
 
-    function infer() {
-      var type = TPath(cls.name.asTypePath([for (p in cls.params) TPType(p.name.asComplexType())]));
-      var props = switch (macro (null:$type).props).typeof().sure() {
-        case TDynamic(null): macro : Dynamic;
-        case t: [
-          t.toComplex(),
-          macro : {
-            @:optional var key(default, never):coconut.react.Key;
-          }
-        ].intersect().sure();
+    function without(type:haxe.macro.Type, name:String):tink.core.Outcome<haxe.macro.Type, tink.core.Error> {
+      return switch type.reduce() {
+        case TAnonymous(_.get().fields => fields):
+          var fields = fields.filter(function(field) return field.name != name);
+          ComplexType.TAnonymous([for(f in fields) {
+            meta: f.meta.get(),
+            kind: FVar(f.type.toComplex()),
+            name: f.name,
+            pos: f.pos,
+          }]).toType();
+        case TDynamic(null):
+          Success(type);
+        case v:
+          Failure(new tink.core.Error('Cannot remove field from $v'));
       }
+    }
+    
+    var type = TPath(cls.name.asTypePath([for (p in cls.params) TPType(p.name.asComplexType())]));
+    var props = switch without((macro (null:$type).props).typeof().sure(), 'children').sure() {
+      case TDynamic(null): macro : Dynamic;
+      case t: [
+        t.toComplex(),
+        macro : {
+          @:optional var key(default, never):coconut.react.Key;
+        }
+      ].intersect().sure();
+    }
+    
+    function infer() {
       return (macro (props : $props));
     }
 
-    var mono = cls.pos.makeBlankType();
-
-    var add = (macro class {
-      inline static public function fromHxx(props:$mono):react.ReactComponent.ReactSingleFragment {
-        ${infer.bounce()};
-        return cast react.React.createElement($i{cls.name}, props);
-      }
+    var add = (switch (macro (null:$type).props.children).typeof() {
+      case Success(_.toComplex() => children):
+        macro class {
+          inline static public function fromHxx(props:$props, ?children:$children):react.ReactComponent.ReactSingleFragment {
+            ${infer.bounce()};
+            return (cast react.React.createElement).apply(react.React, [$i{cls.name}, untyped props].concat(untyped children));
+          }
+        }
+      case Failure(_):
+        macro class {
+          inline static public function fromHxx(props:$props):react.ReactComponent.ReactSingleFragment {
+            ${infer.bounce()};
+            return cast react.React.createElement($i{cls.name}, props);
+          }
+        }
     }).fields;
 
     {
