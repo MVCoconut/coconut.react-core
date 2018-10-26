@@ -39,8 +39,10 @@ class Setup {
       return (macro (props : $props));
     }
 
+    var mono = cls.pos.makeBlankType();
+
     var add = (macro class {
-      static public function fromHxx(props) {
+      static public function fromHxx(props:$mono):react.ReactComponent.ReactSingleFragment {
         ${infer.bounce()};
         return react.React.createElement($i{cls.name}, props);
       }
