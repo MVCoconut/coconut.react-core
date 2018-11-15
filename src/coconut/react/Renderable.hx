@@ -123,8 +123,8 @@ class Renderable extends react.ReactComponent.ReactComponentOfState<{ vtree: Ren
     });
   }
 
-  // @:final @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
-  //   return state.vtree.get() != next.vtree.get();
+  @:final @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
+    return state.vtree.get() != next.vtree.get();
 
   @:final @:noCompletion @:native('render') function reactRender()
     return this.state.vtree.get();
