@@ -148,7 +148,7 @@ class Html {
         kind: FFun({
           var fields = (macro class { 
             @:optional var key(default, never):coconut.react.Key; 
-            @:optional var ref(default, never):$et->Void;
+            @:optional var ref(default, never):coconut.ui.Ref.RefSetter<$et>;
             @:hxxCustomAttributes(~/^(aria-(selected|label))|(data-.*)$/)
             @:optional var $NAMELESS(default, never):CustomAttr;
           }).fields;

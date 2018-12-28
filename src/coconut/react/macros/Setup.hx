@@ -2,6 +2,7 @@ package coconut.react.macros;
 
 #if macro
 import coconut.ui.macros.*;
+import tink.hxx.*;
 import haxe.macro.*;
 import haxe.macro.Expr;
 using haxe.macro.Tools;
@@ -101,7 +102,7 @@ class Setup {
 
   static function all() {
     HXX.generator = new Generator(
-      tink.hxx.Generator.extractTags(macro coconut.react.Html)
+      Generator.extractTags(macro coconut.react.Html)
     );
 
     Compiler.addGlobalMetadata('coconut.ui.View', '@:ignore_empty_render', false);
@@ -129,7 +130,7 @@ class Setup {
       var attributes = TAnonymous(ctx.attributes.concat(
         (macro class {
           @:optional var key(default, never):coconut.react.Key;
-          @:optional var ref(default, never):$self->Void;
+          @:optional var ref(default, never):coconut.ui.Ref.RefSetter<$self>;
         }).fields      
       ));
 

@@ -28,7 +28,7 @@ class CoconutView extends View {
   @:state var a:Int = 0;
   @:tracked @:state var b:Int = 0;
   @:state var c:Int = 0;
-
+  @:ref var counter:CoconutCounter;
   function inca() a++;
   function incb() b++;
 
@@ -38,11 +38,14 @@ class CoconutView extends View {
   function render() '
     <div>
       <h3>Coconut React</h3>
-      <CoconutCounter count=${a} onclick=${inca} />
+      <CoconutCounter ref=$counter count=${a} onclick=${inca} />
       <CoconutCounter count=${b} onclick=${incb} />
       <button onClick=${c++}>${c}</button>
     </div>
   ';
+
+  function viewDidMount()
+    trace(counter.current);
 }
 
 class CoconutCounter extends View {
