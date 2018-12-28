@@ -3,9 +3,11 @@ package coconut.ui;
 import react.*;
 
 abstract Ref<T>(ReactRef<T>) {
+  
   public var current(get, never):T;
-  inline function get_current():T 
-    return this.current;
+    inline function get_current():T 
+      return this.current;
+
   public inline function new()
     this = React.createRef();
 }
