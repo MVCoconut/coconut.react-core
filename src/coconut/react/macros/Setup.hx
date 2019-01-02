@@ -102,7 +102,7 @@ class Setup {
 
   static function all() {
     HXX.generator = new Generator(
-      Generator.extractTags(macro coconut.react.Html)
+      Tag.extractAllFrom(macro coconut.react.Html)
     );
 
     Compiler.addGlobalMetadata('coconut.ui.View', '@:ignore_empty_render', false);
