@@ -4,12 +4,19 @@ package coconut.react.macros;
 import coconut.ui.macros.*;
 import tink.hxx.*;
 import haxe.macro.*;
+import haxe.macro.Type;
 import haxe.macro.Expr;
 using haxe.macro.Tools;
 using tink.MacroApi;
 
 class Setup {
-  
+
+  static function toComplex(cls:ClassType)
+    return TPath(cls.name.asTypePath([for (p in cls.params) TPType(p.name.asComplexType())]));
+
+  static function parametrize(m:Member, self:ClassType) 
+    m.getFunction().sure().params = [for (p in self.params) p.toDecl()];
+
   static function hxxAugment() {
     var cls = Context.getLocalClass().get(),
         fields = Context.getBuildFields();
@@ -26,7 +33,7 @@ class Setup {
     for (f in fields)
       if (f.name == 'fromHxx') return null;
     
-    var type = TPath(cls.name.asTypePath([for (p in cls.params) TPType(p.name.asComplexType())]));
+    var type = toComplex(cls);
     
     var children = null,
         childrenOptional = true;//TODO: this flag is actually not evaluated
@@ -83,19 +90,7 @@ class Setup {
         }      
     ).fields;
 
-    {
-      var fromHxx = (add[0]:Member).getFunction().sure();
-      fromHxx.params = [
-        for (p in cls.params) { 
-          name: p.name, 
-          constraints: switch p.t {
-            case TInst(_.get().kind => KTypeParameter(constraints), _):
-              [for (c in constraints) c.toComplex()];
-            default: throw 'assert';
-          }
-        }
-      ];
-    }
+    parametrize(add[0], cls);
 
     return fields.concat(add);
   }
@@ -123,9 +118,7 @@ class Setup {
         if (m.name == 'state')
           m.pos.error('Name `state` is reserved in coconut.react. Consider using `currentState` instead.');
       
-      var self = cls.name.asComplexType([
-        for (p in cls.params) TPType(p.name.asComplexType())
-      ]);
+      var self = toComplex(cls);
 
       var attributes = TAnonymous(ctx.attributes.concat(
         (macro class {
@@ -153,7 +146,7 @@ class Setup {
       #if react_devtools
       ctx.target.getConstructor().addStatement(macro this.__stateMap = $stateMap);
       #end
-      ctx.target.addMembers(macro class {
+      var added = ctx.target.addMembers(macro class {
         #if react_devtools
         @:keep @:noCompletion var __stateMap:{};
         #end
@@ -161,6 +154,7 @@ class Setup {
           return cast react.React.createElement($i{ctx.target.target.name}, attributes);
         }
       });
+      parametrize(added[added.length - 1], cls);
     });    
   }
 }
