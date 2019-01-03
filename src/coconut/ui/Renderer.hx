@@ -58,7 +58,7 @@ class Renderer extends react.ReactComponent.ReactComponentOfState<{ vtree: Rende
 
   static function __init__() {
     #if react_devtools
-    js.Object.defineProperty(untyped Renderable.prototype, 'state', {
+    js.Object.defineProperty(untyped Renderer.prototype, 'state', {
       get: function () return js.Lib.nativeThis.__state,
       set: function (arg:Dynamic) if (arg != null) {
         
@@ -88,7 +88,7 @@ class Renderer extends react.ReactComponent.ReactComponentOfState<{ vtree: Rende
     });
     #end
 
-    js.Object.defineProperty(untyped Renderable.prototype, 'props', {
+    js.Object.defineProperty(untyped Renderer.prototype, 'props', {
       get: function () return js.Lib.nativeThis.__props,
       set: function (attr:Dynamic) if (attr != null) {
         js.Lib.nativeThis.__props = attr;
