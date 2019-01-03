@@ -1,4 +1,8 @@
 -cp tests
+-dce full
+# -debug
+# -D react_devtools
+-lib xDOM
 -main Playground
 -js bin/playground/index.js
 -lib coconut.react

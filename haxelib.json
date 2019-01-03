@@ -12,6 +12,8 @@
   "releasenote": "initial release",
   "version": "0.0.0",
   "dependencies": {
-    "coconut.ui": ""
+    "coconut.ui": "gh:MVCoconut/coconut.ui#gen4",
+    "react": "gh:back2dos/haxe-react#gen4",
+    "xDOM": ""
   }
 }

@@ -1,6 +1,0 @@
-{
-    "haxe.displayConfigurations": [
-        ["tests.hxml"],
-        ["playground.hxml"]
-    ]
-}
