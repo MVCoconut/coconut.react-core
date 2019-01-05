@@ -6,7 +6,7 @@ using tink.CoreApi;
 
 private typedef Render = Lazy<RenderResult>;//without this some part of the react component macro seems to hang
 
-@:ignore_empty_render
+@:ignoreEmptyRender
 class Renderer extends react.ReactComponent.ReactComponentOfState<{ vtree: Render }> {// consider *not* deriving this from ReactComponent but instead add `isReactComponent = {}`
   
   @:noCompletion var __rendered:Observable<RenderResult>;
