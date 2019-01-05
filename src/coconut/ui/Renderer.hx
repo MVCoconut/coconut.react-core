@@ -124,8 +124,11 @@ class Renderer extends react.ReactComponent.ReactComponentOfState<{ vtree: Rende
   @:final @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
     return state.vtree.get() != next.vtree.get();
 
-  @:final @:noCompletion @:native('render') function reactRender()
-    return this.state.vtree.get();
+  @:final @:noCompletion @:native('render') function reactRender() {
+    var ret = this.state.vtree.get();
+    if (untyped __js__('typeof ret') == 'undefined') return null;
+    return ret;
+  }
 
   static public function mount(target:js.html.Element, vdom:RenderResult)
     react.ReactDOM.render(vdom, target);
