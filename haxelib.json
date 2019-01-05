@@ -13,7 +13,7 @@
   "version": "0.0.0",
   "dependencies": {
     "coconut.ui": "gh:MVCoconut/coconut.ui",
-    "react": "gh:kLabz/haxe-react#next",
+    "react-next": "gh:kLabz/haxe-react#next",
     "xDOM": ""
   }
 }

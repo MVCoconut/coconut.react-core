@@ -136,8 +136,8 @@ class Renderer extends react.ReactComponent.ReactComponentOfState<{ vtree: Rende
   static public inline function updateAll()
     Observable.updateAll();    
 
-  @:noCompletion static public function createFragment(attr:{}, children)
-    return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(children));
+  @:noCompletion static public function createFragment(attr:{}, children:Children):RenderResult
+    return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
 
 #if (haxe_ver >= 4)
