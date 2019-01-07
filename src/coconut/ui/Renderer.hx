@@ -130,11 +130,13 @@ class Renderer extends react.ReactComponent.ReactComponentOfState<{ vtree: Rende
     return ret;
   }
 
+  #if !react_native
   static public function mount(target:js.html.Element, vdom:RenderResult)
     react.ReactDOM.render(vdom, target);
 
   static public function getNative(view:View):Null<js.html.Node>
     return react.ReactDOM.findDOMNode(view);
+  #end
 
   static public inline function updateAll()
     Observable.updateAll();    
