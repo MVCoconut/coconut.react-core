@@ -75,7 +75,7 @@ class Setup {
 
         if (!hasRef)
           ret.push((macro class {
-            @:optional var ref(default, never):$type->Void;
+            @:optional var ref(default, never):coconut.ui.Ref.RefSetter<$type>;
           }).fields[0]);
 
         if (!hasKey)
