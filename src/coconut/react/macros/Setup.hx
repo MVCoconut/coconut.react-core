@@ -47,6 +47,7 @@ class Setup {
       case TAnonymous(_.get().fields => fields):
         
         var ret:Array<Field> = [],
+            hasRef = false,
             hasKey = false;
 
         for (f in fields) 
@@ -61,6 +62,9 @@ class Setup {
               if (f.name == 'key')
                 hasKey = true;
 
+              if (f.name == 'ref')
+                hasRef = true;
+
               ret.push({
                 meta: f.meta.get(),
                 kind: FVar(f.type.toComplex()),
@@ -68,6 +72,11 @@ class Setup {
                 pos: f.pos,                
               });
           }
+
+        if (!hasRef)
+          ret.push((macro class {
+            @:optional var ref(default, never):$type->Void;
+          }).fields[0]);
 
         if (!hasKey)
           ret.push((macro class {
