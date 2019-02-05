@@ -107,9 +107,6 @@ class Setup {
   }
 
   static function all() {
-    HXX.generator = new Generator(
-      Tag.extractAllFrom(macro coconut.react.Html)
-    );
 
     Compiler.addGlobalMetadata('coconut.ui.View', '@:ignore_empty_render', false);
 
@@ -120,7 +117,7 @@ class Setup {
       comp.meta.add(':autoBuild', [macro coconut.react.macros.Setup.hxxAugment()], (macro null).pos);
     }
 
-    Context.getType('coconut.ui.View').getFields();
+    Context.getType('coconut.ui.View').getFields();//Pretty whacky way to force typing order
 
     coconut.ui.macros.ViewBuilder.afterBuild.whenever(function (ctx) {
       var cls = ctx.target.target;
@@ -161,7 +158,7 @@ class Setup {
         #if react_devtools
         @:keep @:noCompletion var __stateMap:{};
         #end
-        static public function fromHxx(attributes:$attributes):coconut.react.ViewFragment<$self> {
+        static public function fromHxx(attributes:$attributes):coconut.ui.RenderResult {
           return cast react.React.createElement($i{ctx.target.target.name}, attributes);
         }
       });
