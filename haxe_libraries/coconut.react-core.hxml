@@ -1,6 +1,6 @@
 -D coconut.react
 -cp src
 -lib coconut.ui
--lib react
+-lib react-next
 -lib tink_domspec
 extraParams.hxml

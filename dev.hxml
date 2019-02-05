@@ -1,0 +1,5 @@
+tests.hxml
+-lib coconut.react-core
+-lib travix
+-js out.js
+--no-output
