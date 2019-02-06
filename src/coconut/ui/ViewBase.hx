@@ -130,9 +130,6 @@ class ViewBase extends react.ReactComponent.ReactComponentOfState<{ vtree: Rende
     return ret;
   }
 
-  static public inline function updateAll()
-    Observable.updateAll();    
-
   @:noCompletion static public function createFragment(attr:{}, children:Children):RenderResult
     return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
