@@ -13,7 +13,7 @@
   "releasenote": "initial release",
   "version": "0.0.0",
   "dependencies": {
-    "coconut.ui": "gh:MVCoconut/coconut.ui",
-    "react-next": "gh:kLabz/haxe-react#next"
+    "coconut.ui": "",
+    "react-next": ""
   }
 }
