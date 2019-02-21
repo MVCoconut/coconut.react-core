@@ -97,7 +97,7 @@ class Setup {
       else 
         macro class {
           inline static public function fromHxx(props:$props, ?children:$children):react.ReactComponent.ReactSingleFragment 
-            return (cast react.React.createElement).apply(react.React, [$i{cls.name}, untyped props].concat(untyped children));
+            return (cast react.React.createElement).apply(react.React, [($i{cls.name}:react.ReactType), untyped props].concat(untyped children));
         }      
     ).fields;
 
