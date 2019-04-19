@@ -75,7 +75,7 @@ class Setup {
 
         if (!hasRef)
           ret.push((macro class {
-            @:optional var ref(default, never):coconut.ui.Ref.RefSetter<$type>;
+            @:optional var ref(default, never):coconut.ui.Ref<$type>;
           }).fields[0]);
 
         if (!hasKey)
@@ -131,7 +131,7 @@ class Setup {
       var attributes = TAnonymous(ctx.attributes.concat(
         (macro class {
           @:optional var key(default, never):coconut.react.Key;
-          @:optional var ref(default, never):coconut.ui.Ref.RefSetter<$self>;
+          @:optional var ref(default, never):coconut.ui.Ref<$self>;
         }).fields      
       ));
 
