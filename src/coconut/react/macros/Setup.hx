@@ -14,7 +14,7 @@ class Setup {
   static function toComplex(cls:ClassType)
     return TPath(cls.name.asTypePath([for (p in cls.params) TPType(p.name.asComplexType())]));
 
-  static function parametrize(m:Member, self:ClassType) 
+  static function parametrize(m:Member, self:ClassType)
     m.getFunction().sure().params = [for (p in self.params) p.toDecl()];
 
   static function hxxAugment() {
@@ -34,9 +34,9 @@ class Setup {
 
     for (f in fields)
       if (f.name == 'fromHxx') return null;
-    
+
     var type = toComplex(cls);
-    
+
     var children = null,
         childrenOptional = true;//TODO: this flag is actually not evaluated
 
@@ -45,12 +45,12 @@ class Setup {
         children = macro : coconut.ui.Children;
         macro : Dynamic;
       case TAnonymous(_.get().fields => fields):
-        
+
         var ret:Array<Field> = [],
             hasRef = false,
             hasKey = false;
 
-        for (f in fields) 
+        for (f in fields)
           switch f.name {
             case 'children':
 
@@ -69,7 +69,7 @@ class Setup {
                 meta: f.meta.get(),
                 kind: FVar(f.type.toComplex()),
                 name: f.name,
-                pos: f.pos,                
+                pos: f.pos,
               });
           }
 
@@ -84,21 +84,22 @@ class Setup {
           }).fields[0]);
 
         TAnonymous(ret);
-      case t:     
-        cls.pos.error('unsupported prop type $t'); 
+      case t:
+        cls.pos.error('unsupported prop type $t');
     }
 
+    var id = cls.isPrivate ? macro $i{cls.name} : macro $p{'${cls.module}.${cls.name}'.split('.')};
     var add = (
       if (children == null)
         macro class {
-          inline static public function fromHxx(props:$props):react.ReactComponent.ReactSingleFragment 
-            return cast react.React.createElement($i{cls.name}, props);
+          inline static public function fromHxx(props:$props):react.ReactComponent.ReactSingleFragment
+            return cast react.React.createElement($id, props);
         }
-      else 
+      else
         macro class {
-          inline static public function fromHxx(props:$props, ?children:$children):react.ReactComponent.ReactSingleFragment 
-            return (cast react.React.createElement).apply(react.React, [($i{cls.name}:react.ReactType), untyped props].concat(untyped children));
-        }      
+          inline static public function fromHxx(props:$props, ?children:$children):react.ReactComponent.ReactSingleFragment
+            return (cast react.React.createElement).apply(react.React, [($id:react.ReactType), untyped props].concat(untyped children));
+        }
     ).fields;
 
     parametrize(add[0], cls);
@@ -125,14 +126,14 @@ class Setup {
       for (m in ctx.target)
         if (m.name == 'state')
           m.pos.error('Name `state` is reserved in coconut.react. Consider using `currentState` instead.');
-      
+
       var self = toComplex(cls);
 
       var attributes = TAnonymous(ctx.attributes.concat(
         (macro class {
           @:optional var key(default, never):coconut.react.Key;
           @:optional var ref(default, never):coconut.ui.Ref<$self>;
-        }).fields      
+        }).fields
       ));
 
       {
@@ -163,7 +164,7 @@ class Setup {
         }
       });
       parametrize(added[added.length - 1], cls);
-    });    
+    });
   }
 }
 #end
