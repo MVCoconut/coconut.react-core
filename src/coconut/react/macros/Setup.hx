@@ -109,6 +109,7 @@ class Setup {
 
   static function all() {
 
+    Compiler.addMetadata('@:native("coconutRender")', 'react.ReactComponentOf', 'render', false);
     Compiler.addGlobalMetadata('coconut.ui.View', '@:ignore_empty_render', false);
 
     var comp = Context.getType('react.ReactComponent').getClass();
@@ -138,7 +139,6 @@ class Setup {
 
       {
         var render = ctx.target.memberByName('render').sure();
-        render.addMeta(':native', [macro 'coconutRender']);
         render.overrides = true;
       }
 
