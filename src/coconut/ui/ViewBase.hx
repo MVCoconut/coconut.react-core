@@ -156,18 +156,18 @@ private typedef Object = js.Object;
 
 @:access(coconut.ui.ViewBase)
 private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> {
-  function componentDidMount() 
+  @:keep function componentDidMount() 
     props.target.componentDidMount();
 
-  function componentDidUpdate(_, _) 
+  @:keep function componentDidUpdate(_, _) 
     props.target.componentDidUpdate(null, null);
 
-  function componentWillUnmount() 
+  @:keep function componentWillUnmount() 
     props.target.componentWillUnmount();
 
   var link:CallbackLink;
 
-  function render() {
+  @:keep function render() {
     link.dissolve();
     var ret = props.target.__rendered.measure();
     link = ret.becameInvalid.handle(function () forceRerender());
