@@ -6,8 +6,20 @@ using tink.CoreApi;
 
 private typedef Render = Lazy<RenderResult>;//without this some part of the react component macro seems to hang
 
+#if (!react_global)
+@:jsRequire("react", "Component") // TODO: this duplication with haxe-react should be minimized
+#end
+@:native('React.Component')
+private extern class NativeComponent<State, Props> {
+  var props(default, null):Props;
+  var state(default, null):State;
+  function setState(state:State):Void;
+  function new():Void;
+  @:native('forceUpdate') function forceRerender():Void;
+}
+
 @:ignoreEmptyRender
-class ViewBase extends react.ReactComponent.ReactComponentOfState<{ vtree: Render }> {// consider *not* deriving this from ReactComponent but instead add `isReactComponent = {}`
+class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
   
   @:noCompletion var __rendered:Observable<RenderResult>;
   @:noCompletion var __link:CallbackLink;
@@ -37,22 +49,22 @@ class ViewBase extends react.ReactComponent.ReactComponentOfState<{ vtree: Rende
   @:noCompletion function __snap():{ vtree: Render }
     return { vtree: function () return __rendered.value };
 
-  @:noCompletion @:final override function componentDidMount() {
+  @:noCompletion @:final function componentDidMount() {
     __link = __rendered.bind(function (_) setState(__snap()));//not my most glorious moment ... a better solution would probably be to poll in render and forceUpdate when becameInvalid
     if (__viewMounted != null) __viewMounted();
   }
     
-  @:noCompletion @:final override function componentDidUpdate(_, _) 
+  @:noCompletion @:final function componentDidUpdate(_, _) 
     if (__viewUpdated != null) __viewUpdated();
 
-  @:noCompletion @:final override function componentWillUnmount() {
+  @:noCompletion @:final function componentWillUnmount() {
     __link.dissolve();
     if (__viewUnmounting != null) __viewUnmounting();
   }  
 
   public function reactify() {
     if (__rewrapped == null)
-      __rewrapped = cast react.React.createElement(Rewrapped, { target: this });
+      __rewrapped = cast react.React.createElement(cast Rewrapped, { target: this });
     return __rewrapped;
   }
 
@@ -121,7 +133,7 @@ class ViewBase extends react.ReactComponent.ReactComponentOfState<{ vtree: Rende
     });
   }
 
-  @:final @:noCompletion override function shouldComponentUpdate(_, next:{ vtree: Render }) 
+  @:final @:noCompletion function shouldComponentUpdate(_, next:{ vtree: Render }) 
     return state.vtree.get() != next.vtree.get();
 
   @:final @:noCompletion @:native('render') function reactRender() {
@@ -142,22 +154,23 @@ private typedef Object = js.Object;
 }
 #end
 
-private class Rewrapped extends react.ReactComponent.ReactComponentOfProps<{ target: ViewBase }> {
-  override function componentDidMount() 
+@:access(coconut.ui.ViewBase)
+private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> {
+  function componentDidMount() 
     props.target.componentDidMount();
 
-  override function componentDidUpdate(_, _) 
+  function componentDidUpdate(_, _) 
     props.target.componentDidUpdate(null, null);
 
-  override function componentWillUnmount() 
+  function componentWillUnmount() 
     props.target.componentWillUnmount();
 
   var link:CallbackLink;
 
-  override function render() {
+  function render() {
     link.dissolve();
-    var ret = @:privateAccess props.target.__rendered.measure();
-    link = ret.becameInvalid.handle(function () forceUpdate());
+    var ret = props.target.__rendered.measure();
+    link = ret.becameInvalid.handle(function () forceRerender());
     return ret.value;
   }
 

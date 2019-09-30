@@ -23,11 +23,9 @@ class Setup {
 
     switch cls {
       case { name: 'View', pack: ['coconut', 'ui'] }:
-        if (!cls.meta.has(':ignoreEmptyRender'))
-          cls.meta.add(':ignoreEmptyRender', [], cls.pos);
         for (f in fields)
           if (f.name == 'forceUpdate')
-            f.access.push(AOverride);
+            f.meta.push({ name: ':native', params: [macro "cocoForceUpdate"], pos: f.pos });
         return fields;
       default:
     }
@@ -138,7 +136,7 @@ class Setup {
       {
         var render = ctx.target.memberByName('render').sure();
         render.addMeta(':native', [macro 'coconutRender']);
-        render.overrides = true;
+        // render.overrides = true;
       }
 
       var states = [];
@@ -159,7 +157,7 @@ class Setup {
         @:keep @:noCompletion var __stateMap:{};
         #end
         static public function fromHxx(attributes:$attributes):coconut.ui.RenderResult {
-          return cast react.React.createElement($i{ctx.target.target.name}, attributes);
+          return cast react.React.createElement(cast $i{ctx.target.target.name}, attributes);
         }
       });
       parametrize(added[added.length - 1], cls);
