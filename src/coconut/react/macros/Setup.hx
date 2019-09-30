@@ -136,7 +136,14 @@ class Setup {
 
       {
         var render = ctx.target.memberByName('render').sure();
-		render.addMeta(':native', [macro 'coconutRender']);
+        render.addMeta(':native', [macro 'coconutRender']);
+        var ctor = ctx.target.getConstructor();
+        @:privateAccess switch ctor.meta { //TODO: this is rather horrible
+          case null:
+            ctor.meta = [{ name: ':keep', params: [], pos: ctor.pos }];
+          case meta: 
+            meta.push({ name: ':keep', params: [], pos: ctor.pos });
+        }
       }
 
       var states = [];

@@ -49,15 +49,15 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
   @:noCompletion function __snap():{ vtree: Render }
     return { vtree: function () return __rendered.value };
 
-  @:noCompletion @:final function componentDidMount() {
+  @:keep @:noCompletion @:final function componentDidMount() {
     __link = __rendered.bind(function (_) setState(__snap()));//not my most glorious moment ... a better solution would probably be to poll in render and forceUpdate when becameInvalid
     if (__viewMounted != null) __viewMounted();
   }
     
-  @:noCompletion @:final function componentDidUpdate(_, _) 
+  @:keep @:noCompletion @:final function componentDidUpdate(_, _) 
     if (__viewUpdated != null) __viewUpdated();
 
-  @:noCompletion @:final function componentWillUnmount() {
+  @:keep @:noCompletion @:final function componentWillUnmount() {
     __link.dissolve();
     if (__viewUnmounting != null) __viewUnmounting();
   }  
@@ -133,10 +133,10 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
     });
   }
 
-  @:final @:noCompletion function shouldComponentUpdate(_, next:{ vtree: Render }) 
+  @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: Render }) 
     return state.vtree.get() != next.vtree.get();
 
-  @:final @:noCompletion @:native('render') function reactRender() {
+  @:keep @:noCompletion @:final @:native('render') function reactRender() {
     var ret = this.state.vtree.get();
     if (untyped __js__('typeof ret') == 'undefined') return null;
     return ret;
