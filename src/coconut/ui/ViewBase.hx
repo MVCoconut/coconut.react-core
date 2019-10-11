@@ -128,7 +128,8 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
         }
         attr = attr.__cct;
         #end
-        js.Lib.nativeThis.__initAttributes(attr);//TODO: unhardcode __initAtributes identifier
+        if(js.Lib.nativeThis.__initAttributes) // analyzer could have removed empty function
+          js.Lib.nativeThis.__initAttributes(attr);//TODO: unhardcode __initAtributes identifier
       }
     });
   }
