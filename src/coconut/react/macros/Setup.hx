@@ -2,6 +2,7 @@ package coconut.react.macros;
 
 #if macro
 import coconut.ui.macros.*;
+import tink.SyntaxHub;
 import tink.hxx.*;
 import haxe.macro.*;
 import haxe.macro.Type;
@@ -169,6 +170,32 @@ class Setup {
       });
       parametrize(added[added.length - 1], cls);
     });
+  }
+  
+  static function sugar() {
+    SyntaxHub.classLevel.after('tink.lang.sugar.Hxx', function(c:ClassBuilder) {
+      if(c.target.superClass != null && c.target.superClass.t.toString() == 'coconut.ui.View') {
+        switch c.memberByName('render') {
+          case Success(member = {kind: FFun(f)}):
+            var exprs = Lambda.fold(
+              member.metaNamed(':coconut.react.hook'), 
+              function(hook, last:Array<Expr>) return last.concat(hook.params), 
+              []
+            );
+            if(exprs.length > 0)
+              trace('transforming ${c.target.name}::${member.name}');
+              f.expr = macro {
+                function Render() {
+                  @:mergeBlock $b{exprs};
+                  ${f.expr};
+                }
+                return react.ReactMacro.jsx('<Render/>');
+              }
+          case _:
+        }
+      }
+      return false;
+    }, 'coconut.react.macros.Setup::sugar');
   }
 }
 #end
