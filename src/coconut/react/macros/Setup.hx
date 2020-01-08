@@ -182,15 +182,21 @@ class Setup {
               function(hook, last:Array<Expr>) return last.concat(hook.params), 
               []
             );
-            if(exprs.length > 0)
-              trace('transforming ${c.target.name}::${member.name}');
-              f.expr = macro {
-                function Render() {
+            
+            
+            if(exprs.length > 0) {
+              var name = 'HookWrapper_${member.name}';
+              var jsx = '<$name/>';
+              var expr = f.expr;
+              f.expr = macro return react.ReactMacro.jsx($v{jsx});
+              c.addMembers(macro class {
+                function $name() {
                   @:mergeBlock $b{exprs};
-                  ${f.expr};
+                  ${expr};
                 }
-                return react.ReactMacro.jsx('<Render/>');
-              }
+              });
+            }
+              
           case _:
         }
       }
