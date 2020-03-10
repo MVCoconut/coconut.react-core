@@ -159,12 +159,40 @@ class Setup {
       #if react_devtools
       ctx.target.getConstructor().addStatement(macro this.__stateMap = $stateMap);
       #end
+      
+      var wrapped =
+        switch cls.meta.extract(':react.hoc') {
+          case []:
+            // do nothing
+            false;
+          case wraps:
+            var wrapped = macro cast $i{ctx.target.target.name};
+          
+            for(wrap in wraps) {
+              switch wrap.params {
+                case [wrapper]: wrapped = macro $wrapper($wrapped);
+                case _: wrap.pos.error('@:wrap requires exactly one parameter');
+              }
+            }
+            
+            ctx.target.addMembers(macro class {
+              @:keep static var __hoc:react.ReactType = $wrapped;
+            });
+            
+            wrapped.log();
+            
+            true;
+        }
+      
+      var reactType = macro cast $i{ctx.target.target.name};
+      if(wrapped) reactType = macro $reactType.__hoc;
+      
       var added = ctx.target.addMembers(macro class {
         #if react_devtools
         @:keep @:noCompletion var __stateMap:{};
         #end
         static public function fromHxx(attributes:$attributes):coconut.ui.RenderResult {
-          return cast react.React.createElement(cast $i{ctx.target.target.name}, attributes);
+          return cast react.React.createElement($reactType, attributes);
         }
       });
       parametrize(added[added.length - 1], cls);
