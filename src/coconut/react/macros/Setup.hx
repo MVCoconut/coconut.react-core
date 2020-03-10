@@ -183,9 +183,9 @@ class Setup {
                 }
                 wrapped = macro $wrapper($wrapped);
               case {params: [wrapper, _], pos: pos}:
-                pos.error('Second parameter of @:wrap should be a ETypeCheck expr of an anonymous structure');
+                pos.error('Second parameter of @:wrap should be a ETypeCheck expr');
               case {pos: pos}:
-                pos.error('@:wrap must has one or two parameters');
+                pos.error('@:wrap must have one or two parameters');
             }
           }
           
@@ -199,24 +199,27 @@ class Setup {
       // injected props
       for(member in ctx.target)
         switch [member.kind, member.meta.filter(function(meta) return meta.name == ':react.injected')] {
-          case [_, []]: // skip
-          case [FFun(_), _]: member.pos.error('@:react.injected does not work on functions');
+          case [_, []]:
+            // skip
+          case [FFun(_), _]:
+            member.pos.error('@:react.injected does not work on functions');
           case [FVar(ct, e) | FProp(_, _, ct, e), [meta = {params: params}]]:
-            if(e != null) e.pos.error('Field with @:react.injected cannot have a initializer');
+            if(e != null) e.pos.error('Field with @:react.injected cannot have an initializer');
             var name = switch params {
               case []:
                 member.name;
               case [macro $v{(name:String)}]:
                 name;
               case _:
-                meta.pos.error('@:react.injected should have exactly one parameter');
+                meta.pos.error('@:react.injected should have at most one parameter');
             }
             member.kind = FProp('get', 'never', ct, null);
             var getter = member.name.getter(macro return (cast props).$name);
             getter.isBound = true;
             ctx.target.addMember(getter);
             
-          case _: member.pos.error('Multiple @:react.injected is not supported');
+          case _:
+            member.pos.error('Multiple @:react.injected is not supported');
         }
       
       var added = ctx.target.addMembers(macro class {
