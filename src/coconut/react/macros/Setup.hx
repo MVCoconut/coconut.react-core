@@ -127,12 +127,13 @@ class Setup {
 
       var self = toComplex(cls);
 
-      var attributes = TAnonymous(ctx.attributes.concat(
+      var attributeFields = ctx.attributes.concat(
         (macro class {
           @:optional var key(default, never):coconut.react.Key;
           @:optional var ref(default, never):coconut.ui.Ref<$self>;
         }).fields
-      ));
+      );
+      var attributes = TAnonymous(attributeFields);
 
       {
         var render = ctx.target.memberByName('render').sure();
@@ -162,6 +163,7 @@ class Setup {
       
       var reactType = macro cast $i{ctx.target.target.name};
       
+      // HOC wrap
       switch cls.meta.extract(':react.hoc') {
         case []:
           // do nothing
@@ -170,8 +172,20 @@ class Setup {
           
           for(i in 0...wraps.length) { // loop in reverse, so that the first meta will become the outermost wrap
             switch wraps[wraps.length - i - 1] {
-              case {params: [wrapper]}: wrapped = macro $wrapper($wrapped);
-              case wrap: wrap.pos.error('@:wrap requires exactly one parameter');
+              case {params: [wrapper]}:
+                wrapped = macro $wrapper($wrapped);
+              case {params: [wrapper, e = macro (_:$ct)]}:
+                switch ct.toType() {
+                  case Success(_.reduce().toComplex() => TAnonymous(fields)):
+                    for(field in fields) attributeFields.push(field);
+                  case _:
+                    e.pos.error('Expected anonymous structure type');
+                }
+                wrapped = macro $wrapper($wrapped);
+              case {params: [wrapper, _], pos: pos}:
+                pos.error('Second parameter of @:wrap should be a ETypeCheck expr of an anonymous structure');
+              case {pos: pos}:
+                pos.error('@:wrap must has one or two parameters');
             }
           }
           
@@ -181,6 +195,29 @@ class Setup {
           
           reactType = macro $reactType.__hoc;
       }
+      
+      // injected props
+      for(member in ctx.target)
+        switch [member.kind, member.meta.filter(function(meta) return meta.name == ':react.injected')] {
+          case [_, []]: // skip
+          case [FFun(_), _]: member.pos.error('@:react.injected does not work on functions');
+          case [FVar(ct, e) | FProp(_, _, ct, e), [meta = {params: params}]]:
+            if(e != null) e.pos.error('Field with @:react.injected cannot have a initializer');
+            var name = switch params {
+              case []:
+                member.name;
+              case [macro $v{(name:String)}]:
+                name;
+              case _:
+                meta.pos.error('@:react.injected should have exactly one parameter');
+            }
+            member.kind = FProp('get', 'never', ct, null);
+            var getter = member.name.getter(macro return (cast props).$name);
+            getter.isBound = true;
+            ctx.target.addMember(getter);
+            
+          case _: member.pos.error('Multiple @:react.injected is not supported');
+        }
       
       var added = ctx.target.addMembers(macro class {
         #if react_devtools
