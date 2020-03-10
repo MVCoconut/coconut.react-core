@@ -160,32 +160,27 @@ class Setup {
       ctx.target.getConstructor().addStatement(macro this.__stateMap = $stateMap);
       #end
       
-      var wrapped =
-        switch cls.meta.extract(':react.hoc') {
-          case []:
-            // do nothing
-            false;
-          case wraps:
-            var wrapped = macro cast $i{ctx.target.target.name};
-            
-            for(i in 0...wraps.length) { // loop in reverse, so that the first meta will become the outermost wrap
-              switch wraps[wraps.length - i - 1] {
-                case {params: [wrapper]}: wrapped = macro $wrapper($wrapped);
-                case wrap: wrap.pos.error('@:wrap requires exactly one parameter');
-              }
-            }
-            
-            ctx.target.addMembers(macro class {
-              @:keep static var __hoc:react.ReactType = $wrapped;
-            });
-            
-            wrapped.log();
-            
-            true;
-        }
-      
       var reactType = macro cast $i{ctx.target.target.name};
-      if(wrapped) reactType = macro $reactType.__hoc;
+      
+      switch cls.meta.extract(':react.hoc') {
+        case []:
+          // do nothing
+        case wraps:
+          var wrapped = macro cast $i{ctx.target.target.name};
+          
+          for(i in 0...wraps.length) { // loop in reverse, so that the first meta will become the outermost wrap
+            switch wraps[wraps.length - i - 1] {
+              case {params: [wrapper]}: wrapped = macro $wrapper($wrapped);
+              case wrap: wrap.pos.error('@:wrap requires exactly one parameter');
+            }
+          }
+          
+          ctx.target.addMembers(macro class {
+            @:keep static var __hoc:react.ReactType = $wrapped;
+          });
+          
+          reactType = macro $reactType.__hoc;
+      }
       
       var added = ctx.target.addMembers(macro class {
         #if react_devtools
