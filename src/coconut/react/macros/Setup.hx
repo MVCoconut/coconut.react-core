@@ -167,11 +167,11 @@ class Setup {
             false;
           case wraps:
             var wrapped = macro cast $i{ctx.target.target.name};
-          
-            for(wrap in wraps) {
-              switch wrap.params {
-                case [wrapper]: wrapped = macro $wrapper($wrapped);
-                case _: wrap.pos.error('@:wrap requires exactly one parameter');
+            
+            for(i in 0...wraps.length) { // loop in reverse, so that the first meta will become the outermost wrap
+              switch wraps[wraps.length - i - 1] {
+                case {params: [wrapper]}: wrapped = macro $wrapper($wrapped);
+                case wrap: wrap.pos.error('@:wrap requires exactly one parameter');
               }
             }
             
