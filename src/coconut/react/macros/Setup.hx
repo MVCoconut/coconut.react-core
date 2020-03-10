@@ -174,7 +174,7 @@ class Setup {
             switch wraps[wraps.length - i - 1] {
               case {params: [wrapper]}:
                 wrapped = macro $wrapper($wrapped);
-              case {params: [wrapper, e = macro (_:$ct)]}:
+              case {params: [wrapper, e = macro (_:$ct)]}: // https://github.com/HaxeFoundation/haxe-evolution/pull/44
                 switch ct.toType() {
                   case Success(_.reduce().toComplex() => TAnonymous(fields)):
                     for(field in fields) attributeFields.push(field);
