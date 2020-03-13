@@ -238,10 +238,11 @@ class Setup {
             
             init.expr = init.expr.concat(macro {
               var value:Dynamic = (cast $i{init.args[0].name}).$name;
-              if(Std.is(value, tink.state.Observable.ObservableObject)) {
-                if($i{internal} != value) $i{internal} = value; // TODO: this is so hacky, fix me please
-              } else {
-                (cast $i{internal}:tink.state.State<$ct>).set(value);
+              if(($i{internal}:Dynamic) != value) {
+                if(Std.is(value, tink.state.Observable.ObservableObject))
+                  $i{internal} = value; // TODO: this is so hacky, fix me please
+                else
+                  (cast $i{internal}:tink.state.State<$ct>).set(value);
               }
             });
             
