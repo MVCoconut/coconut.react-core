@@ -177,7 +177,14 @@ class Setup {
               case {params: [wrapper, e = macro (_:$ct)]}: // https://github.com/HaxeFoundation/haxe-evolution/pull/44
                 switch ct.toType() {
                   case Success(_.reduce().toComplex() => TAnonymous(fields)):
-                    for(field in fields) attributeFields.push(field);
+                    for(field in fields) {
+                      switch field.kind {
+                        case FVar(ct, e): field.kind = FVar(macro:coconut.data.Value<$ct>, e);
+                        case FProp(get, set, ct, e): field.kind = FProp(get, set, macro:coconut.data.Value<$ct>, e);
+                        case _: // TODO:
+                      }
+                      attributeFields.push(field);
+                    }
                   case _:
                     e.pos.error('Expected anonymous structure type');
                 }
@@ -214,7 +221,15 @@ class Setup {
                 meta.pos.error('@:react.injected should have at most one parameter');
             }
             member.kind = FProp('get', 'never', ct, null);
-            var getter = member.name.getter(macro return (cast props).$name);
+            var getter = member.name.getter(macro {
+              var attr:Any = (cast props).$name;
+              // TODO: figure out a way to distinguish coconut attr and react prop at compile time
+              return
+                if(Std.is(attr, tink.state.Observable.ObservableObject))
+                  (attr:coconut.data.Value<$ct>).value
+                else
+                  (attr:$ct);
+            });
             getter.isBound = true;
             ctx.target.addMember(getter);
             
