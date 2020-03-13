@@ -127,13 +127,14 @@ class Setup {
 
       var self = toComplex(cls);
 
+      var extendTypes = [];
       var attributeFields = ctx.attributes.concat(
         (macro class {
           @:optional var key(default, never):coconut.react.Key;
           @:optional var ref(default, never):coconut.ui.Ref<$self>;
         }).fields
       );
-      var attributes = TAnonymous(attributeFields);
+      var attributes = TExtend(extendTypes, attributeFields);
 
       {
         var render = ctx.target.memberByName('render').sure();
@@ -176,14 +177,16 @@ class Setup {
                 wrapped = macro $wrapper($wrapped);
               case {params: [wrapper, e = macro (_:$ct)]}: // https://github.com/HaxeFoundation/haxe-evolution/pull/44
                 switch ct.toType() {
-                  case Success(_.reduce().toComplex() => TAnonymous(fields)):
+                  case Success(_.toComplex() => TAnonymous(fields)):
                     for(field in fields) attributeFields.push(field);
+                  case Success(t = _.toComplex() => TPath(path)) if(t.reduce().match(TAnonymous(_))):
+                    extendTypes.push(path);
                   case _:
                     e.pos.error('Expected anonymous structure type');
                 }
                 wrapped = macro $wrapper($wrapped);
               case {params: [wrapper, _], pos: pos}:
-                pos.error('Second parameter of @:wrap should be a ETypeCheck expr');
+                pos.error('Second parameter of @:wrap should be a ECheckType expr');
               case {pos: pos}:
                 pos.error('@:wrap must have one or two parameters');
             }
