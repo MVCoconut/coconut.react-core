@@ -204,6 +204,12 @@ class Setup {
       }
       
       // injected props
+      var init = 
+        switch ctx.target.memberByName('__initAttributes') {
+          case Success({kind: FFun(f)}): f;
+          case _: throw 'unreachable';
+        }
+      
       for(member in ctx.target)
         switch [member.kind, member.meta.filter(function(meta) return meta.name == ':react.injected')] {
           case [_, []]:
@@ -220,18 +226,24 @@ class Setup {
               case _:
                 meta.pos.error('@:react.injected should have at most one parameter');
             }
+            var internal = '__coco_${member.name}';
+            var getter = 'get_${member.name}';
+            
             member.kind = FProp('get', 'never', ct, null);
-            var getter = member.name.getter(macro {
-              var attr:Any = (cast props).$name;
-              // TODO: figure out a way to distinguish coconut attr and react prop at compile time
-              return
-                if(Std.is(attr, tink.state.Observable.ObservableObject))
-                  (attr:coconut.data.Value<$ct>).value
-                else
-                  (attr:$ct);
+            ctx.target.addMembers(macro class {
+              @:noCompletion private var $internal:tink.state.Observable<$ct> =
+                new tink.state.State(null);
+              inline function $getter() return $i{internal}.value;
             });
-            getter.isBound = true;
-            ctx.target.addMember(getter);
+            
+            init.expr = init.expr.concat(macro {
+              var value:Dynamic = (cast $i{init.args[0].name}).$name;
+              if(Std.is(value, tink.state.Observable.ObservableObject)) {
+                if($i{internal} != value) $i{internal} = value; // TODO: this is so hacky, fix me please
+              } else {
+                (cast $i{internal}:tink.state.State<$ct>).set(value);
+              }
+            });
             
           case _:
             member.pos.error('Multiple @:react.injected is not supported');
