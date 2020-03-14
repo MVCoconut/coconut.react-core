@@ -35,7 +35,7 @@ class HocTest {
 }
 
 @:react.hoc(wrapper)
-class Wrapped extends coconut.ui.View {
+private class Wrapped extends coconut.ui.View {
 	@:attr var onUpdate:(foo:Int)->Void;
 	@:attr var onFinish:()->Void;
 	
@@ -54,7 +54,8 @@ class Wrapped extends coconut.ui.View {
 	}
 }
 
-class Injector extends ReactComponent {
+// TODO: marking this as non-private works on 4.0.5 but not nightly
+private class Injector extends ReactComponent {
 	final timer:Timer;
 	
 	public function new(props) {
