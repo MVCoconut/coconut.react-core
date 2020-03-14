@@ -1,0 +1,6 @@
+-D coconut.react-dom=0.1.0
+# @install: lix --silent download "gh://github.com/MVCoconut/coconut.react-dom#eb72b2561383068a86757d1466b491a0ae1f5d75" into coconut.react-dom/0.1.0/github/eb72b2561383068a86757d1466b491a0ae1f5d75
+-lib coconut.react-core
+-lib xDOM
+-cp ${HAXE_LIBCACHE}/coconut.react-dom/0.1.0/github/eb72b2561383068a86757d1466b491a0ae1f5d75/src
+--macro coconut.react.macros.Html.registerTags()

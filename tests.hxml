@@ -2,6 +2,11 @@
 -main RunTests
 -dce full
 
+
 -D react_global
 -lib embed-js
 --macro embed.Js.from('http://cdnjs.cloudflare.com/ajax/libs/react/16.10.2/umd/react.production.min.js')
+--macro embed.Js.from('http://cdnjs.cloudflare.com/ajax/libs/react-dom/16.13.0/umd/react-dom.production.min.js')
+
+-lib tink_unittest
+-lib coconut.react-dom
