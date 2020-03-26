@@ -139,7 +139,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
 
   @:keep @:noCompletion @:final @:native('render') function reactRender() {
     var ret = this.state.vtree.get();
-    if (untyped __js__('typeof ret') == 'undefined') return null;
+    if (#if haxe4 js.Syntax.typeof(ret) #else untyped __js__('typeof {0}', ret) #end == 'undefined') return null;
     return ret;
   }
 
