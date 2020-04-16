@@ -22,6 +22,9 @@ private extern class NativeComponent<State, Props> {
 @:build(coconut.ui.macros.ViewBase.build())
 class View extends ViewBase {
   macro function hxx(e);
+
+  @:noCompletion static public function createFragment(attr:{}, children:Children):RenderResult
+    return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
 
 class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
@@ -147,9 +150,6 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
     if (#if haxe4 js.Syntax.typeof(ret) #else untyped __js__('typeof {0}', ret) #end == 'undefined') return null;
     return ret;
   }
-
-  @:noCompletion static public function createFragment(attr:{}, children:Children):RenderResult
-    return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
 
 #if (haxe_ver >= 4)
