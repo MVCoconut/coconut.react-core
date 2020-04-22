@@ -5,7 +5,7 @@ class View {
     return coconut.react.macros.HXX.parse(e);
 
   static function init()
-    return coconut.ui.macros.ViewBuilder.init(function (ctx) {
+    return coconut.ui.macros.ViewBuilder.init(macro : coconut.react.RenderResult, function (ctx) {
       var cls = ctx.target.target;
 
       for (m in ctx.target)
