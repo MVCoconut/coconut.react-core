@@ -1,6 +1,5 @@
 package coconut.react;
 
-#if !macro
 import tink.state.*;
 
 using tink.CoreApi;
@@ -19,7 +18,7 @@ private extern class NativeComponent<State, Props> {
   @:native('forceUpdate') function forceRerender():Void;
 }
 
-@:build(coconut.ui.macros.ViewBase.build())
+@:build(coconut.react.View.init())
 class View extends ViewBase {
   macro function hxx(e);
 
@@ -181,10 +180,3 @@ private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> {
   }
 
 }
-#else
-class View {
-  static function hxx(_, e)
-    return coconut.ui.macros.HXX.parse(e, 'coconut.react.View.createFragment');
-
-}
-#end

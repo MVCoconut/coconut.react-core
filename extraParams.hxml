@@ -1,2 +1,1 @@
 --macro coconut.react.macros.Setup.all()
--D hxx_fragment=coconut.ui.ViewBase.createFragment
