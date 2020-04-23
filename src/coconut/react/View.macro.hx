@@ -4,8 +4,8 @@ class View {
   static function hxx(_, e)
     return coconut.react.macros.HXX.parse(e);
 
-  static function init()
-    return coconut.ui.macros.ViewBuilder.init(macro : coconut.react.RenderResult, function (ctx) {
+  static function init() {
+    var ret =  coconut.ui.macros.ViewBuilder.init(macro : coconut.react.RenderResult, function (ctx) {
       var cls = ctx.target.target;
 
       for (m in ctx.target)
@@ -58,4 +58,14 @@ class View {
 
       parametrize(added[added.length - 1], cls);
     });
+
+    for (f in ret)
+      if (f.name == 'forceUpdate')
+        f.meta = (switch f.meta {
+          case null: [];
+          case v: v;
+        }).concat([{ name: ':native', params: [macro '_coco_forceUpdate'], pos: (macro null).pos }]);
+
+    return ret;
+  }
 }
