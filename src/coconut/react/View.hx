@@ -1,4 +1,4 @@
-package coconut.ui;
+package coconut.react;
 
 import tink.state.*;
 
@@ -18,9 +18,16 @@ private extern class NativeComponent<State, Props> {
   @:native('forceUpdate') function forceRerender():Void;
 }
 
-@:ignoreEmptyRender
+@:build(coconut.react.View.init())
+class View extends ViewBase {
+  macro function hxx(e);
+
+  @:noCompletion static public function createFragment(attr:{}, children:Children):RenderResult
+    return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
+}
+
 class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
-  
+
   @:noCompletion var __rendered:Observable<RenderResult>;
   @:noCompletion var __link:CallbackLink;
   @:noCompletion var __viewMounted:Void->Void;
@@ -53,14 +60,14 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
     __link = __rendered.bind(function (_) setState(__snap()));//not my most glorious moment ... a better solution would probably be to poll in render and forceUpdate when becameInvalid
     if (__viewMounted != null) __viewMounted();
   }
-    
-  @:keep @:noCompletion @:final function componentDidUpdate(_, _) 
+
+  @:keep @:noCompletion @:final function componentDidUpdate(_, _)
     if (__viewUpdated != null) __viewUpdated();
 
   @:keep @:noCompletion @:final function componentWillUnmount() {
     __link.dissolve();
     if (__viewUnmounting != null) __viewUnmounting();
-  }  
+  }
 
   public function reactify() {
     if (__rewrapped == null)
@@ -73,11 +80,11 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
     js.Object.defineProperty(untyped ViewBase.prototype, 'state', {
       get: function () return js.Lib.nativeThis.__state,
       set: function (arg:Dynamic) if (arg != null) {
-        
+
         js.Lib.nativeThis.__state = arg;
-        
+
         if (!arg.__subverted) {//Muahaha!
-          
+
           js.Object.defineProperty(arg, '__subverted', {
             enumerable: false,
             value: true
@@ -94,7 +101,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
             js.Object.defineProperty(arg, name, {
               enumerable: true,
               get: states[name]
-            });            
+            });
         }
       }
     });
@@ -106,15 +113,15 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
         js.Lib.nativeThis.__props = attr;
         #if react_devtools
         if (!attr.__cct) {
-          
+
           var actual = Reflect.copy(attr);
 
           for (f in Reflect.fields(actual)) {
             var o:Observable.ObservableObject<Dynamic> = Reflect.field(actual, f);
-            if (!Reflect.isFunction(o.poll)) 
+            if (!Reflect.isFunction(o.poll))
               Reflect.setField(actual, f, Observable.const(o));
           }
-          
+
           js.Object.defineProperty(attr, '__cct', {
             value: actual,
             enumerable: false,
@@ -134,7 +141,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
     });
   }
 
-  @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: Render }) 
+  @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: Render })
     return state.vtree.get() != next.vtree.get();
 
   @:keep @:noCompletion @:final @:native('render') function reactRender() {
@@ -142,9 +149,6 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
     if (#if haxe4 js.Syntax.typeof(ret) #else untyped __js__('typeof {0}', ret) #end == 'undefined') return null;
     return ret;
   }
-
-  @:noCompletion static public function createFragment(attr:{}, children:Children):RenderResult
-    return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
 
 #if (haxe_ver >= 4)
@@ -155,15 +159,15 @@ private typedef Object = js.Object;
 }
 #end
 
-@:access(coconut.ui.ViewBase)
+@:access(coconut.react.ViewBase)
 private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> {
-  @:keep function componentDidMount() 
+  @:keep function componentDidMount()
     props.target.componentDidMount();
 
-  @:keep function componentDidUpdate(_, _) 
+  @:keep function componentDidUpdate(_, _)
     props.target.componentDidUpdate(null, null);
 
-  @:keep function componentWillUnmount() 
+  @:keep function componentWillUnmount()
     props.target.componentWillUnmount();
 
   var link:CallbackLink;
