@@ -1,5 +1,6 @@
 package coconut.react.macros;
 
+#if macro
 class Helpers {
 
   static public function toComplex(cls:ClassType)
@@ -8,3 +9,4 @@ class Helpers {
   static public function parametrize(m:Member, self:ClassType)
     m.getFunction().sure().params = [for (p in self.params) p.toDecl()];
 }
+#end

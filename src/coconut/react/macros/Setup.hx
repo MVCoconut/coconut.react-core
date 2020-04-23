@@ -1,5 +1,6 @@
 package coconut.react.macros;
 
+#if macro
 class Setup {
 
   static function hxxAugment() {
@@ -93,3 +94,4 @@ class Setup {
     // Context.getType('coconut.ui.View').getFields();//Pretty whacky way to force typing order
   }
 }
+#end
