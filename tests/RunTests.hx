@@ -1,6 +1,8 @@
 package ;
 
 import coconut.ui.*;
+import react.ReactComponent;
+import react.ReactType;
 
 class RunTests {
 
@@ -8,11 +10,18 @@ class RunTests {
     travix.Logger.println('it works');
     travix.Logger.exit(0); // make sure we exit properly, which is necessary on some targets, e.g. flash & (phantom)js
   }
-  
+
 }
 
-class Foo extends View {
-  function render() ' 
-    <Isolated>Hello, world!</Isolated>
+@:keep class Foo extends View {
+  static final native:ReactTypeOf<{ foo:Int, bar: String }> = null;
+  function render() '
+    <>
+      Hello, world!
+      <Native key="1" foo={5} bar="bar" />
+      <native foo={5} bar="bar" />
+    </>
   ';
 }
+
+extern class Native extends react.ReactComponent.ReactComponentOfProps<{ foo:Int, bar: String }> {}

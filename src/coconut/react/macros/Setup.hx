@@ -85,8 +85,20 @@ class Setup {
 
   static function all() {
     Compiler.addGlobalMetadata('react.ReactComponent', '@:autoBuild(coconut.react.macros.Setup.hxxAugment())', true);
+    Compiler.addGlobalMetadata('react.ReactType', '@:build(coconut.react.macros.Setup.supportReactTypeOf())', true);
   }
 
+  static function supportReactTypeOf()
+    return
+      switch Context.getLocalClass().get().kind {
+        case KAbstractImpl(_.get() => { name: 'ReactTypeOf' }):
+          var ret = Context.getBuildFields();
 
+          return ret.concat((macro class {
+            @:impl static public function fromHxx(self:ReactType, hxxMeta:{ ?key:coconut.react.Key }, props:TProps):ReactElement
+              return React.createElement(self, if (hxxMeta.key != null) js.Object.assign(hxxMeta, cast props) else props);
+          }).fields);
+        default: null;
+      }
 }
 #end
