@@ -84,14 +84,9 @@ class Setup {
   }
 
   static function all() {
-    var comp = Context.getType('react.ReactComponent').getClass();
-
-    if (!comp.meta.has(':hxxAugmented')) {
-      comp.meta.add(':hxxAugmented', [], (macro null).pos);
-      comp.meta.add(':autoBuild', [macro coconut.react.macros.Setup.hxxAugment()], (macro null).pos);
-    }
-
-    // Context.getType('coconut.ui.View').getFields();//Pretty whacky way to force typing order
+    Compiler.addGlobalMetadata('react.ReactComponent', '@:autoBuild(coconut.react.macros.Setup.hxxAugment())', true);
   }
+
+
 }
 #end
