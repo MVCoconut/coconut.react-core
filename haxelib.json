@@ -1,19 +1,19 @@
 {
-  "name": "coconut.react-core",
-  "license": "MIT",
-  "tags": [
-    "coconut",
-    "react"
-  ],
-  "classPath": "src",
-  "contributors": [
-    "kevinresol",
-    "back2dos"
-  ],
-  "releasenote": "initial release",
-  "version": "0.1.0",
-  "dependencies": {
-    "coconut.ui": "",
-    "react-next": ""
-  }
+	"name": "coconut.react-core",
+	"classPath": "src",
+	"dependencies": {
+		"react-next": "",
+		"coconut.ui": ""
+	},
+	"contributors": [
+		"kevinresol",
+		"back2dos"
+	],
+	"version": "0.2.0",
+	"releasenote": "Adjust for multibackend support.",
+	"tags": [
+		"coconut",
+		"react"
+	],
+	"license": "MIT"
 }
