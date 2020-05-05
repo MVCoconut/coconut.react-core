@@ -18,7 +18,8 @@ private extern class NativeComponent<State, Props> {
   @:native('forceUpdate') function forceRerender():Void;
 }
 
-@:build(coconut.react.View.init())
+@:build(coconut.ui.macros.ViewBuilder.build((_:coconut.react.RenderResult)))
+@:autoBuild(coconut.react.View.autoBuild())
 class View extends ViewBase {
   macro function hxx(e);
 
