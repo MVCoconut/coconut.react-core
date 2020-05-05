@@ -9,8 +9,8 @@
 		"kevinresol",
 		"back2dos"
 	],
-	"version": "0.2.0",
-	"releasenote": "Adjust for multibackend support.",
+	"version": "0.2.1",
+	"releasenote": "Avoid diagnostics issues.",
 	"tags": [
 		"coconut",
 		"react"
