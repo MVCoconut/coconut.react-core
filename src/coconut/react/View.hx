@@ -1,5 +1,6 @@
 package coconut.react;
 
+import tink.state.Observable;
 import tink.state.*;
 
 using tink.CoreApi;
@@ -161,23 +162,30 @@ private typedef Object = js.Object;
 #end
 
 @:access(coconut.react.ViewBase)
-private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> {
-  @:keep function componentDidMount()
+private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> implements Invalidatable {
+
+  function observable():ObservableObject<RenderResult>
+    return props.target.__rendered;
+
+  @:keep function componentDidMount() {
     props.target.componentDidMount();
+    link = observable().onInvalidate(this);
+  }
 
   @:keep function componentDidUpdate(_, _)
     props.target.componentDidUpdate(null, null);
 
-  @:keep function componentWillUnmount()
+  @:keep function componentWillUnmount() {
+    link.dissolve();
     props.target.componentWillUnmount();
+  }
 
   var link:CallbackLink;
 
-  @:keep function render() {
-    link.dissolve();
-    var ret = props.target.__rendered.measure();
-    link = ret.becameInvalid.handle(function () forceRerender());
-    return ret.value;
-  }
+  public function invalidate()
+    forceRerender();
+
+  @:keep function render()
+    return observable().getValue();
 
 }
