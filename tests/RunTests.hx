@@ -3,14 +3,16 @@ package ;
 import coconut.ui.*;
 import react.ReactComponent;
 import react.ReactType;
+import tink.unit.*;
+import tink.testrunner.*;
 
 class RunTests {
 
   static function main() {
-    travix.Logger.println('it works');
-    travix.Logger.exit(0); // make sure we exit properly, which is necessary on some targets, e.g. flash & (phantom)js
+    Runner.run(TestBatch.make([
+      new InjectTest(),
+    ])).handle(Runner.exit);
   }
-
 }
 
 @:keep class Foo extends View {
