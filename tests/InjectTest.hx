@@ -12,23 +12,20 @@ using tink.CoreApi;
 
 @:asserts
 class InjectTest {
-	var div:DivElement;
-	
-	public function new() {
-		div = document.createDivElement();
-		document.body.appendChild(div);
-	}
+	public function new() {}
 	
 	public function test() {
-		Renderer.mount(div, '<Injected/>');
+		var rendered = js.Lib.require('react-test-renderer').create(Injected.fromHxx({}));
 		
-		var e = document.querySelector('div#injected');
-		asserts.assert(e.innerHTML == 'bar:1');
+		var children:Array<String> = rendered.root.findByProps({id: 'injected'}).children;
+		asserts.assert(children.length == 1);
+		asserts.assert(children[0] == 'bar:1');
 		
 		Future.delay(200, Noise)
 			.next(_ -> {
-				asserts.assert(e.innerHTML == 'bar:2');
-				Renderer.mount(div, null);
+				var children:Array<String> = rendered.root.findByProps({id: 'injected'}).children;
+				asserts.assert(children.length == 1);
+				asserts.assert(children[0] == 'bar:2');
 				Noise;
 			})
 			.handle(asserts.handle);
@@ -41,7 +38,9 @@ class InjectTest {
 @:react.hoc(InjectTest.Injected.wrap)
 class Injected extends View {
 	@:react.injected var foo:String;
-	function render() '<div id="injected">$foo</div>';
+	function render() {
+		return React.createElement('div', {id: 'injected'}, foo);
+	}
 	
 	public static function wrap(v:ReactType):ReactType {
 		return function(props) return React.createElement(Wrapper, {component: v});

@@ -2,5 +2,4 @@
 -cp src
 -lib coconut.ui
 -lib react-next
--lib tink_domspec
 extraParams.hxml

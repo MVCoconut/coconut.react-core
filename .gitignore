@@ -1,2 +1,5 @@
 bin/playground/index.js
 bin/js
+bin/node/tests.js
+
+node_modules
