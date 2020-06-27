@@ -3,6 +3,7 @@ package;
 import js.html.*;
 import js.Browser.*;
 import coconut.react.*;
+import coconut.Ui.*;
 import react.React;
 import react.ReactComponent;
 import react.ReactType;
@@ -15,7 +16,7 @@ class InjectTest {
 	public function new() {}
 	
 	public function test() {
-		var rendered = js.Lib.require('react-test-renderer').create(Injected.fromHxx({}));
+		var rendered = js.Lib.require('react-test-renderer').create(hxx('<Injected/>'));
 		
 		var children:Array<String> = rendered.root.findByProps({id: 'injected'}).children;
 		asserts.assert(children.length == 1);
