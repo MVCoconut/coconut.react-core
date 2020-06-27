@@ -128,7 +128,7 @@ class View {
           
           init.expr = init.expr.concat(macro {
             var value:$ct = (cast $i{init.args[0].name}).$name;
-            $i{internal}.setData(value);
+            $i{internal}.setData(tink.state.Observable.const(value));
           });
           
         case _:
