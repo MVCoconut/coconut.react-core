@@ -127,8 +127,8 @@ class View {
 
           member.kind = FProp('get', 'never', ct, null);
           ctx.target.addMembers(macro class {
-            @:noCompletion private var $internal:coconut.ui.tools.Slot<$ct, coconut.data.Value<$ct>> =
-              new coconut.ui.tools.Slot(this);
+            @:noCompletion private var $internal:coconut.ui.internal.Slot<$ct, coconut.data.Value<$ct>> =
+              new coconut.ui.internal.Slot(this);
             inline function $getter() return $i{internal}.value;
           });
 
@@ -166,6 +166,12 @@ class View {
   static function autoBuild()
     return ViewBuilder.autoBuild({
       renders: macro : coconut.react.RenderResult,
+      implicits: {
+        name: '__react_context',
+        fields: (macro class {
+          @:keep static final contextType = @:privateAccess coconut.react.Implicit.CTX;
+        }).fields,
+      },
       afterBuild: afterBuild,
     });
 }

@@ -1,5 +1,6 @@
 package coconut.react;
 
+import coconut.ui.internal.ImplicitContext;
 import coconut.react.internal.NativeComponent;
 import tink.state.Observable;
 import tink.state.*;
@@ -18,7 +19,7 @@ class View extends ViewBase {
     return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
 
-class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
+class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
 
   @:noCompletion var __rendered:Observable<RenderResult>;
   @:noCompletion var __link:CallbackLink;
@@ -144,7 +145,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
 }
 
 @:access(coconut.react.ViewBase)
-private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> implements Invalidatable {
+private class Rewrapped extends NativeComponent<{}, { target: ViewBase }, {}> implements Invalidatable {
 
   function observable():ObservableObject<RenderResult>
     return __react_props.target.__rendered;

@@ -1,3 +1,3 @@
 package coconut.react;
 
-typedef Children = coconut.ui.ChildrenOf<RenderResult>;
+typedef Children = coconut.ui.internal.Children<RenderResult>;
