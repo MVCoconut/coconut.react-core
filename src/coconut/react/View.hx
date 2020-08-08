@@ -111,7 +111,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
 
           for (f in Reflect.fields(actual)) {
             var o:Observable.ObservableObject<Dynamic> = Reflect.field(actual, f);
-            if (!Reflect.isFunction(o.poll))
+            if (!Reflect.isFunction(o.getValue))
               Reflect.setField(actual, f, Observable.const(o));
           }
 
