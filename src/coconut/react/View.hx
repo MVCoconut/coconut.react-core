@@ -1,5 +1,6 @@
 package coconut.react;
 
+import coconut.react.internal.NativeComponent;
 import tink.state.Observable;
 import tink.state.*;
 import js.lib.Object;
@@ -7,18 +8,6 @@ import js.lib.Object;
 using tink.CoreApi;
 
 private typedef Render = Lazy<RenderResult>;//without this some part of the react component macro seems to hang
-
-#if (!react_global)
-@:jsRequire("react", "Component") // TODO: this duplication with haxe-react should be minimized
-#end
-@:native('React.Component')
-private extern class NativeComponent<State, Props> {
-  @:noCompletion @:native('props') var __react_props(default, null):Props;
-  @:noCompletion @:native('state') var __react_state(default, null):State;
-  @:noCompletion @:native('setState') function __react_setState(state:State):Void;
-  function new():Void;
-  @:noCompletion @:native('forceUpdate') function __react_forceUpdate():Void;
-}
 
 @:build(coconut.ui.macros.ViewBuilder.build((_:coconut.react.RenderResult)))
 @:autoBuild(coconut.react.View.autoBuild())
