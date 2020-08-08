@@ -10,7 +10,7 @@ class View {
     static function get_reserved()
       return switch reserved {
         case null:
-          reserved = [for (f in Context.getType('coconut.react.internal.NativeComponent').getClass().fields.get())
+          reserved = [for (f in Context.getType('react.ReactComponent').getClass().fields.get())
             f.name => true
           ];
         case v: v;
@@ -34,8 +34,6 @@ class View {
     var attributes = TAnonymous(attributeFields);
 
     {
-      var render = ctx.target.memberByName('render').sure();
-      render.addMeta(':native', [macro 'coconutRender']);
       var ctor = ctx.target.getConstructor();
       @:privateAccess switch ctor.meta { //TODO: this is rather horrible
         case null:
