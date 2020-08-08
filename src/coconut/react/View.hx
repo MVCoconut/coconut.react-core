@@ -13,11 +13,11 @@ private typedef Render = Lazy<RenderResult>;//without this some part of the reac
 #end
 @:native('React.Component')
 private extern class NativeComponent<State, Props> {
-  var props(default, null):Props;
-  var state(default, null):State;
-  function setState(state:State):Void;
+  @:noCompletion @:native('props') var __react_props(default, null):Props;
+  @:noCompletion @:native('state') var __react_state(default, null):State;
+  @:noCompletion @:native('setState') function __react_setState(state:State):Void;
   function new():Void;
-  @:native('forceUpdate') function forceRerender():Void;
+  @:noCompletion @:native('forceUpdate') function __react_forceUpdate():Void;
 }
 
 @:build(coconut.ui.macros.ViewBuilder.build((_:coconut.react.RenderResult)))
@@ -47,7 +47,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
 
     super();
 
-    this.state = __snap();
+    this.__react_state = __snap();
 
     __rendered = rendered;
 
@@ -60,7 +60,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
     return { vtree: function () return __rendered.value };
 
   @:keep @:noCompletion @:final function componentDidMount() {
-    __link = __rendered.bind(function (_) setState(__snap()));//not my most glorious moment ... a better solution would probably be to poll in render and forceUpdate when becameInvalid
+    __link = __rendered.bind(function (_) __react_setState(__snap()));//not my most glorious moment ... a better solution would probably be to poll in render and forceUpdate when becameInvalid
     if (__viewMounted != null) __viewMounted();
   }
 
@@ -145,10 +145,10 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
   }
 
   @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: Render })
-    return state.vtree.get() != next.vtree.get();
+    return __react_state.vtree.get() != next.vtree.get();
 
   @:keep @:noCompletion @:final @:native('render') function reactRender() {
-    var ret = this.state.vtree.get();
+    var ret = this.__react_state.vtree.get();
     if (js.Syntax.typeof(ret) == 'undefined') return null;
     return ret;
   }
@@ -158,25 +158,25 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
 private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> implements Invalidatable {
 
   function observable():ObservableObject<RenderResult>
-    return props.target.__rendered;
+    return __react_props.target.__rendered;
 
   @:keep function componentDidMount() {
-    props.target.componentDidMount();
+    __react_props.target.componentDidMount();
     link = observable().onInvalidate(this);
   }
 
   @:keep function componentDidUpdate(_, _)
-    props.target.componentDidUpdate(null, null);
+    __react_props.target.componentDidUpdate(null, null);
 
   @:keep function componentWillUnmount() {
     link.dissolve();
-    props.target.componentWillUnmount();
+    __react_props.target.componentWillUnmount();
   }
 
   var link:CallbackLink;
 
   public function invalidate()
-    forceRerender();
+    __react_forceUpdate();
 
   @:keep function render()
     return observable().getValue();
