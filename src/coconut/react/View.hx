@@ -2,6 +2,7 @@ package coconut.react;
 
 import tink.state.Observable;
 import tink.state.*;
+import js.lib.Object;
 
 using tink.CoreApi;
 
@@ -79,7 +80,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
 
   static function __init__() {
     #if react_devtools
-    js.Object.defineProperty(untyped ViewBase.prototype, 'state', {
+    Object.defineProperty(untyped ViewBase.prototype, 'state', {
       get: function () return js.Lib.nativeThis.__state,
       set: function (arg:Dynamic) if (arg != null) {
 
@@ -87,12 +88,12 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
 
         if (!arg.__subverted) {//Muahaha!
 
-          js.Object.defineProperty(arg, '__subverted', {
+          Object.defineProperty(arg, '__subverted', {
             enumerable: false,
             value: true
           });
 
-          js.Object.defineProperty(arg, 'vtree', {
+          Object.defineProperty(arg, 'vtree', {
             enumerable: false,
             value: arg.vtree
           });
@@ -100,7 +101,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
           var states:haxe.DynamicAccess<Void->Dynamic> = js.Lib.nativeThis.__stateMap;
 
           for (name in states.keys())
-            js.Object.defineProperty(arg, name, {
+            Object.defineProperty(arg, name, {
               enumerable: true,
               get: states[name]
             });
@@ -109,7 +110,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
     });
     #end
 
-    js.Object.defineProperty(untyped ViewBase.prototype, 'props', {
+    Object.defineProperty(untyped ViewBase.prototype, 'props', {
       get: function () return js.Lib.nativeThis.__props,
       set: function (attr:Dynamic) if (attr != null) {
         js.Lib.nativeThis.__props = attr;
@@ -124,13 +125,13 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
               Reflect.setField(actual, f, Observable.const(o));
           }
 
-          js.Object.defineProperty(attr, '__cct', {
+          Object.defineProperty(attr, '__cct', {
             value: actual,
             enumerable: false,
           });
 
           for (field in Reflect.fields(actual))
-            js.Object.defineProperty(attr, field, {
+            Object.defineProperty(attr, field, {
               get: function () return (Reflect.field(actual, field) : Observable<Dynamic>).value,
               enumerable: true,
             });
@@ -148,18 +149,10 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}> {
 
   @:keep @:noCompletion @:final @:native('render') function reactRender() {
     var ret = this.state.vtree.get();
-    if (#if haxe4 js.Syntax.typeof(ret) #else untyped __js__('typeof {0}', ret) #end == 'undefined') return null;
+    if (js.Syntax.typeof(ret) == 'undefined') return null;
     return ret;
   }
 }
-
-#if (haxe_ver >= 4)
-private typedef Object = js.Object;
-#else
-@:native('Object') extern class Object {
-  static function defineProperty(target:{}, name:String, descriptor:{}):Void;//Not very exact, but good enough
-}
-#end
 
 @:access(coconut.react.ViewBase)
 private class Rewrapped extends NativeComponent<{}, { target: ViewBase }> implements Invalidatable {
