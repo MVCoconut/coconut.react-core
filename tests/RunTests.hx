@@ -5,12 +5,13 @@ import react.ReactComponent;
 import react.ReactType;
 import tink.unit.*;
 import tink.testrunner.*;
+import Issue5;
 
 class RunTests {
 
   static function main() {
     Runner.run(TestBatch.make([
-      new InjectTest(),
+      new InjectTest()
     ])).handle(Runner.exit);
   }
 }

@@ -6,12 +6,18 @@ class View {
   static function hxx(_, e)
     return coconut.react.macros.HXX.parse(e);
 
+  static var reserved(get, null):Map<String, Bool>;
+    static function get_reserved()
+      return [for (f in Context.getType('coconut.react.internal.NativeComponent').getClass().fields.get())
+        f.name => true
+      ];
+
   static function afterBuild(ctx:ViewInfo) {
     var cls = ctx.target.target;
 
     for (m in ctx.target)
-      if (m.name == 'state')
-        m.pos.error('Name `state` is reserved in coconut.react. Consider using `currentState` instead.');
+      if (reserved[m.name])
+        m.addMeta(':native', [macro $v{'__coco_' + m.name}]);
 
     var self = toComplex(cls);
 
@@ -49,17 +55,17 @@ class View {
     #if react_devtools
     ctx.target.getConstructor().addStatement(macro this.__stateMap = $stateMap);
     #end
-    
-    
+
+
     var reactType = macro cast $i{ctx.target.target.name};
-      
+
     // HOC wrap
     switch cls.meta.extract(':react.hoc') {
       case []:
         // do nothing
       case wraps:
         var wrapped = macro cast $i{ctx.target.target.name};
-        
+
         for(i in 0...wraps.length) { // loop in reverse, so that the first meta will become the outermost wrap
           switch wraps[wraps.length - i - 1] {
             case {params: [wrapper]}:
@@ -85,21 +91,21 @@ class View {
               pos.error('@:wrap must have one or two parameters');
           }
         }
-        
+
         ctx.target.addMembers(macro class {
           @:keep static var __hoc:react.ReactType = $wrapped;
         });
-        
+
         reactType = macro $reactType.__hoc;
     }
-    
+
     // injected props
-    var init = 
+    var init =
       switch ctx.target.memberByName('__initAttributes') {
         case Success({kind: FFun(f)}): f;
         case _: throw 'unreachable';
       }
-    
+
     for(member in ctx.target)
       switch [member.kind, member.meta.filter(function(meta) return meta.name == ':react.injected')] {
         case [_, []]:
@@ -118,26 +124,26 @@ class View {
           }
           var internal = '__coco_${member.name}';
           var getter = 'get_${member.name}';
-          
+
           member.kind = FProp('get', 'never', ct, null);
           ctx.target.addMembers(macro class {
             @:noCompletion private var $internal:coconut.ui.tools.Slot<$ct, coconut.data.Value<$ct>> =
               new coconut.ui.tools.Slot(this);
             inline function $getter() return $i{internal}.value;
           });
-          
+
           init.expr = init.expr.concat(macro {
             var value:$ct = (cast $i{init.args[0].name}).$name;
             $i{internal}.setData(tink.state.Observable.const(value));
           });
-          
+
         case _:
           member.pos.error('Multiple @:react.injected is not supported');
       }
-    
-    
-    
-    
+
+
+
+
 
     var added = ctx.target.addMembers(macro class {
       #if react_devtools

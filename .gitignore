@@ -1,5 +1,6 @@
 bin/playground/index.js
 bin/js
 bin/node/tests.js
+bin/node/package-lock.json
 
 node_modules
