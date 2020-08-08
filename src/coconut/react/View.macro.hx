@@ -8,9 +8,13 @@ class View {
 
   static var reserved(get, null):Map<String, Bool>;
     static function get_reserved()
-      return [for (f in Context.getType('coconut.react.internal.NativeComponent').getClass().fields.get())
-        f.name => true
-      ];
+      return switch reserved {
+        case null:
+          reserved = [for (f in Context.getType('coconut.react.internal.NativeComponent').getClass().fields.get())
+            f.name => true
+          ];
+        case v: v;
+      }
 
   static function afterBuild(ctx:ViewInfo) {
     var cls = ctx.target.target;
@@ -140,10 +144,6 @@ class View {
         case _:
           member.pos.error('Multiple @:react.injected is not supported');
       }
-
-
-
-
 
     var added = ctx.target.addMembers(macro class {
       #if react_devtools
