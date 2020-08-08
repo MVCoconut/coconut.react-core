@@ -169,7 +169,7 @@ class View {
       implicits: {
         name: '__react_context',
         fields: (macro class {
-          @:keep static final contextType = @:privateAccess coconut.react.Implicit.CTX;
+          @:keep static final contextType = @:privateAccess coconut.react.Implicit.contextType;
         }).fields,
       },
       afterBuild: afterBuild,

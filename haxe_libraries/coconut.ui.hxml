@@ -1,7 +1,7 @@
--lib tink_anon
--lib tink_lang
--lib tink_hxx
+# @install: lix --silent download "gh://github.com/MVCoconut/coconut.ui#b5c04daf4a59444ea7b592b72a33da4534f7c747" into coconut.ui/0.11.2/github/b5c04daf4a59444ea7b592b72a33da4534f7c747
 -lib coconut.data
--cp ${SCOPE_DIR}/../coconut.ui/src
+-lib tink_anon
+-lib tink_hxx
+-lib tink_lang
+-cp ${HAXE_LIBCACHE}/coconut.ui/0.11.2/github/b5c04daf4a59444ea7b592b72a33da4534f7c747/src
 -D coconut.ui=0.11.2
---macro Sys.println("haxe_libraries/coconut.ui.hxml:6: [Warning] Using dev version of library coconut.ui")
