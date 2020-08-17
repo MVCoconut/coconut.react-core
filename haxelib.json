@@ -2,16 +2,16 @@
 	"name": "coconut.react-core",
 	"classPath": "src",
 	"dependencies": {
+		"tink_priority": "",
 		"react-next": "",
-		"coconut.ui": "",
-		"tink_priority": ""
+		"coconut.ui": ""
 	},
 	"contributors": [
 		"kevinresol",
 		"back2dos"
 	],
-	"version": "0.2.1",
-	"releasenote": "Avoid diagnostics issues.",
+	"version": "0.2.2",
+	"releasenote": "Remove tink_lang dependency.",
 	"tags": [
 		"coconut",
 		"react"
