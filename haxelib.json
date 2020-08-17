@@ -3,7 +3,8 @@
 	"classPath": "src",
 	"dependencies": {
 		"react-next": "",
-		"coconut.ui": ""
+		"coconut.ui": "",
+		"tink_priority": ""
 	},
 	"contributors": [
 		"kevinresol",
