@@ -10,7 +10,7 @@ class Implicit extends NativeComponent<{}, Attr, ImplicitContext> {
   @:native('__coco_context') var context:ImplicitContext;
 
   function new() {
-    super();
+    js.Syntax.code('{0}.call(this)', NativeComponent);
     this.context = new ImplicitContext(() -> this.__react_context);
   }
 

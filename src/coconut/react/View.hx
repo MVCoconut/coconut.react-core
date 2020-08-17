@@ -34,9 +34,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
     updated:Void->Void,
     unmounting:Void->Void
   ) {
-
-    super();
-
+    js.Syntax.code('{0}.call(this)', NativeComponent);
     this.__react_state = __snap();
 
     __rendered = rendered;

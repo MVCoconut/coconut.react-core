@@ -9,6 +9,5 @@ extern class NativeComponent<State, Props, Context> {
   @:noCompletion @:native('state') var __react_state(default, null):State;
   @:noCompletion @:native('context') var __react_context(default, null):Context;
   @:noCompletion @:native('setState') function __react_setState(state:State):Void;
-  function new():Void;
   @:noCompletion @:native('forceUpdate') function __react_forceUpdate():Void;
 }
