@@ -26,11 +26,14 @@ class View {
 
     var self = toComplex(cls);
 
-    var refCt = (function () return (macro:coconut.ui.Ref<$self>).toType().sure()).lazyComplex();// Somehow it's necessary to delay typing here
+    var refType =
+      if (Context.defined('display')) macro : Dynamic // things typed in display shouldn't be cached, so let's hope this is an ok way to sidestep issues.
+      else macro : coconut.ui.Ref<$self>;
+
     var attributeFields = ctx.attributes.concat(
       (macro class {
         @:optional var key(default, never):coconut.react.Key;
-        @:optional var ref(default, never):$refCt;
+        @:optional var ref(default, never):$refType;
       }).fields
     );
 
