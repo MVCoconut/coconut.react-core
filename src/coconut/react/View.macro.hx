@@ -17,20 +17,23 @@ class View {
       }
 
   static function afterBuild(ctx:ViewInfo) {
+
     var cls = ctx.target.target;
 
     for (m in ctx.target)
       if (reserved[m.name])
-        m.addMeta(':native', [macro $v{'__coco_' + m.name}]);
+        m.addMeta(':native', (macro null).pos, [macro $v{'__coco_' + m.name}]);
 
     var self = toComplex(cls);
 
+    var refCt = (function () return (macro:coconut.ui.Ref<$self>).toType().sure()).lazyComplex();// Somehow it's necessary to delay typing here
     var attributeFields = ctx.attributes.concat(
       (macro class {
         @:optional var key(default, never):coconut.react.Key;
-        @:optional var ref(default, never):coconut.ui.Ref<$self>;
+        @:optional var ref(default, never):$refCt;
       }).fields
     );
+
     var attributes = TAnonymous(attributeFields);
 
     {
@@ -154,12 +157,6 @@ class View {
 
     parametrize(added[added.length - 1], cls);
 
-    for (f in ctx.target)
-      if (f.name == 'forceUpdate')
-        f.meta = (switch f.meta {
-          case null: [];
-          case v: v;
-        }).concat([{ name: ':native', params: [macro '_coco_forceUpdate'], pos: (macro null).pos }]);
   }
   static function autoBuild()
     return ViewBuilder.autoBuild({
