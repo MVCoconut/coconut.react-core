@@ -1,1 +1,2 @@
 --macro coconut.react.macros.Setup.all()
+-D coconut_react_core
