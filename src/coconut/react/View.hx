@@ -13,6 +13,8 @@ private typedef Render = Lazy<RenderResult>;//without this some part of the reac
 @:build(coconut.ui.macros.ViewBuilder.build((_:coconut.react.RenderResult)))
 @:autoBuild(coconut.react.View.autoBuild())
 class View extends ViewBase {
+  static final TRE = js.Syntax.code("(typeof Symbol === \"function\" && Symbol.for && Symbol.for(\"react.element\")) || 0xeac7");
+
   macro function hxx(e);
 
   @:noCompletion static public function createFragment(attr:{}, children:Children):RenderResult

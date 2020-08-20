@@ -26,17 +26,18 @@ class View {
 
     var self = toComplex(cls);
 
-    var refType =
-      if (Context.defined('display')) macro : Dynamic // things typed in display shouldn't be cached, so let's hope this is an ok way to sidestep issues.
-      else macro : coconut.ui.Ref<$self>;
+    var hxxMeta = {
+      var refType =
+        if (Context.defined('display')) macro : Dynamic // things typed in display shouldn't be cached, so let's hope this is an ok way to sidestep issues.
+        else macro : coconut.ui.Ref<$self>;
 
-    var attributeFields = ctx.attributes.concat(
-      (macro class {
+      macro : {
         @:optional var key(default, never):coconut.react.Key;
         @:optional var ref(default, never):$refType;
-      }).fields
-    );
+      }
+    }
 
+    var attributeFields = ctx.attributes.copy();
     var attributes = TAnonymous(attributeFields);
 
     {
@@ -149,13 +150,19 @@ class View {
           member.pos.error('Multiple @:react.injected is not supported');
       }
 
+    var magic = "$$typeof";
     var added = ctx.target.addMembers(macro class {
       #if react_devtools
       @:keep @:noCompletion var __stateMap:{};
       #end
-      static public function fromHxx(attributes:$attributes):coconut.ui.RenderResult {
-        return cast react.React.createElement($reactType, attributes);
-      }
+      static public function fromHxx(hxxMeta:$hxxMeta, attributes:$attributes):coconut.ui.RenderResult
+        return {
+          $magic: coconut.react.View.TRE,
+          type: $reactType,
+          props: attributes,
+          key: hxxMeta.key,
+          ref: if (!cast hxxMeta.ref) null else hxxMeta.ref,
+        }
     });
 
     parametrize(added[added.length - 1], cls);
