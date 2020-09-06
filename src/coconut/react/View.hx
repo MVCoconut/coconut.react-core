@@ -2,7 +2,7 @@ package coconut.react;
 
 import coconut.ui.internal.ImplicitContext;
 import coconut.react.internal.NativeComponent;
-import tink.state.Observable;
+import tink.state.internal.*;
 import tink.state.*;
 import js.lib.Object;
 
