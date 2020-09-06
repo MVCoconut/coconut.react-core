@@ -136,10 +136,11 @@ class View {
 
           member.kind = FProp('get', 'never', ct, null);
           ctx.target.addMembers(macro class {
-            @:noCompletion private var $internal:coconut.ui.internal.Slot<$ct, coconut.data.Value<$ct>> =
-              new coconut.ui.internal.Slot(this);
+            @:noCompletion private var $internal:coconut.ui.internal.Slot<$ct, coconut.data.Value<$ct>>;
             inline function $getter() return $i{internal}.value;
           });
+
+          ctx.target.getConstructor().addStatement(macro this.$internal = new coconut.ui.internal.Slot(this));
 
           init.expr = init.expr.concat(macro {
             var value:$ct = (cast $i{init.args[0].name}).$name;
