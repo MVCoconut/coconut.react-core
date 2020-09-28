@@ -58,7 +58,7 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
     if (__viewUpdated != null) __viewUpdated();
 
   @:keep @:noCompletion @:final function componentWillUnmount() {
-    __link.dissolve();
+    __link.cancel();
     if (__viewUnmounting != null) __viewUnmounting();
   }
 
@@ -159,7 +159,7 @@ private class Rewrapped extends NativeComponent<{}, { target: ViewBase }, {}> im
     __react_props.target.componentDidUpdate(null, null);
 
   @:keep function componentWillUnmount() {
-    link.dissolve();
+    link.cancel();
     __react_props.target.componentWillUnmount();
   }
 
