@@ -2,8 +2,9 @@ package coconut.react.internal;
 
 #if (!react_global)
 @:jsRequire("react", "Component") // TODO: this duplication with haxe-react should be minimized
-#end
+#else
 @:native('React.Component')
+#end
 extern class NativeComponent<State, Props, Context> {
   @:noCompletion @:native('props') var __react_props(default, null):Props;
   @:noCompletion @:native('state') var __react_state(default, null):State;
