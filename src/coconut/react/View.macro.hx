@@ -140,7 +140,7 @@ class View {
             inline function $getter() return $i{internal}.value;
           });
 
-          ctx.target.getConstructor().addStatement(macro this.$internal = new coconut.ui.internal.Slot(this));
+          ctx.target.getConstructor().addStatement(macro this.$internal = new coconut.ui.internal.Slot(this), true);
 
           init.expr = init.expr.concat(macro {
             var value:$ct = (cast $i{init.args[0].name}).$name;
