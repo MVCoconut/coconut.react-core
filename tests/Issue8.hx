@@ -18,9 +18,11 @@ class Issue8 {
   public function test() {
     var rendered = ReactTestRenderer.create(hxx('<Root />'));
     asserts.assert(msgs.length == 2);
+    asserts.assert(msgs[0] == 'render Root 1');
     rendered.root.findByType(Div).props.onclick();
     updateAll();
     asserts.assert(msgs.length == 3);
+    asserts.assert(msgs[2] == 'render Root 0');
     return asserts.done();
   }
 }
