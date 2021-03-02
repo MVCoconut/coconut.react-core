@@ -137,11 +137,11 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
   @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: Render })
     return __react_state.vtree.get() != next.vtree.get();
 
-  @:keep @:noCompletion @:final @:native('render') function reactRender() {
-    var ret = this.__react_state.vtree.get();
-    if (js.Syntax.typeof(ret) == 'undefined') return null;
-    return ret;
-  }
+  @:keep @:noCompletion @:final @:native('render') function reactRender()
+    return switch this.__react_state.vtree.get() {
+      case js.Syntax.typeof(_) => 'undefined': null;
+      case v: v;
+    }
 }
 
 @:access(coconut.react.ViewBase)
