@@ -14,14 +14,14 @@ using tink.CoreApi;
 @:asserts
 class InjectTest {
 	public function new() {}
-	
+
 	public function test() {
-		var rendered = js.Lib.require('react-test-renderer').create(hxx('<Injected/>'));
-		
+		var rendered = ReactTestRenderer.create(hxx('<Injected/>'));
+
 		var children:Array<String> = rendered.root.findByProps({id: 'injected'}).children;
 		asserts.assert(children.length == 1);
 		asserts.assert(children[0] == 'bar:1');
-		
+
 		Future.delay(200, Noise)
 			.next(_ -> {
 				var children:Array<String> = rendered.root.findByProps({id: 'injected'}).children;
@@ -30,7 +30,7 @@ class InjectTest {
 				Noise;
 			})
 			.handle(asserts.handle);
-			
+
 		return asserts;
 	}
 }
@@ -42,7 +42,7 @@ class Injected extends View {
 	function render() {
 		return React.createElement('div', {id: 'injected'}, foo);
 	}
-	
+
 	public static function wrap(v:ReactType):ReactType {
 		return function(props) return React.createElement(Wrapper, {component: v});
 	}
@@ -53,11 +53,11 @@ class Wrapper extends ReactComponent {
 		super(props);
 		state = {foo: 1}
 	}
-	
+
 	override function render() {
 		return React.createElement(untyped props.component, {foo: 'bar:' + state.foo});
 	}
-	
+
 	override function componentDidMount() {
 		haxe.Timer.delay(function() setState({foo: state.foo + 1}), 20);
 	}
