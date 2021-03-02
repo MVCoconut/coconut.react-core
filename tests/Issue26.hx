@@ -9,7 +9,7 @@ import js.Browser.*;
 using tink.CoreApi;
 
 @:asserts
-class Issue8 {
+class Issue26 {
   static final msgs = [];
   static public function log(v)
     msgs.push(v);
@@ -35,7 +35,7 @@ class Root extends View {
   });
 
   function render() {
-    Issue8.log('render Root ${value.raw.length}');
+    Issue26.log('render Root ${value.raw.length}');
     return @hxx '
       <>
         <for ${i in 0...value.raw.length}>
@@ -54,7 +54,7 @@ class Sub extends View {
   @:attr var value:Value<Obj, Obj>;
   @:attr var onClick:Void->Void;
   function render() {
-    Issue8.log('render Sub ${value.raw}');
+    Issue26.log('render Sub ${value.raw}');
     return @hxx '<Div onclick=${onClick}>${value.raw == null ? null : value.raw.foo}</Div>';
   }
 }

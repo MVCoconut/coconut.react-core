@@ -12,7 +12,7 @@ class RunTests {
   static function main() {
     Runner.run(TestBatch.make([
       new InjectTest(),
-      new Issue8(),
+      new Issue26(),
     ])).handle(Runner.exit);
   }
 }
