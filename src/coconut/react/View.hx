@@ -35,14 +35,19 @@ class ViewBase extends NativeComponent<{ vtree: RenderResult }, {}, ImplicitCont
   ) {
     js.Syntax.code('{0}.call(this)', NativeComponent);
     this.__rendered = rendered;
-    this.__react_state = __snap();
     this.__viewMounted = mounted;
     this.__viewUpdated = updated;
     this.__viewUnmounting = unmounting;
   }
 
+  @:noCompletion function __getRender()
+    return (switch __react_state {
+      case null: __snap();
+      case v: v;
+    }).vtree;
+
   @:noCompletion function __snap():{ vtree: RenderResult }
-    return { vtree: Observable.untracked(() -> __rendered.value) };
+    return { vtree: __rendered.value };
 
   @:keep @:noCompletion @:final function componentDidMount() {
     if (__viewMounted != null) __viewMounted();
@@ -62,13 +67,13 @@ class ViewBase extends NativeComponent<{ vtree: RenderResult }, {}, ImplicitCont
   }
 
   @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: RenderResult })
-    return __react_state.vtree != next.vtree;
+    return __getRender() != next.vtree;
 
   @:keep @:noCompletion @:final @:native('render') function reactRender() {
     if (this.__binding == null) {
       this.__binding = new Binding(this);
     }
-    return switch this.__react_state.vtree {
+    return switch __getRender() {
       case js.Syntax.typeof(_) => 'undefined': null;
       case v: v;
     }
