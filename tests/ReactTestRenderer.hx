@@ -8,4 +8,5 @@ extern class ReactTestRenderer {
 
 extern class ReactTestRoot {
   function findByProps(props:{}):Dynamic;
+  function findByType(t:react.ReactType):Dynamic;
 }

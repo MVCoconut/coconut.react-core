@@ -4,7 +4,7 @@ class Renderer {
 
   #if !macro
   static public inline function updateAll()
-    ViewBase.updateAll();
+    tink.state.Observable.updateAll();
   #end
 
   static public macro function hxx(e)

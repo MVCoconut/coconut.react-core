@@ -1,5 +1,5 @@
 -cp tests
 -main RunTests
 -dce full
-
+-D no-deprecation-warnings
 -lib tink_unittest
