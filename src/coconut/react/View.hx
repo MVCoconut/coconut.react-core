@@ -19,13 +19,14 @@ class View extends ViewBase {
     return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
 
-class ViewBase extends NativeComponent<{ vtree: RenderResult }, {}, ImplicitContext> {
+class ViewBase extends NativeComponent<{ revision: Int }, {}, ImplicitContext> {
 
   @:noCompletion var __rendered:Observable<RenderResult>;
   @:noCompletion var __binding:Binding;
   @:noCompletion var __viewMounted:Void->Void;
   @:noCompletion var __viewUpdated:Void->Void;
   @:noCompletion var __viewUnmounting:Void->Void;
+  @:noCompletion var __last:RenderResult;
 
   public function new(
     rendered:Observable<RenderResult>,
@@ -34,24 +35,16 @@ class ViewBase extends NativeComponent<{ vtree: RenderResult }, {}, ImplicitCont
     unmounting:Void->Void
   ) {
     js.Syntax.code('{0}.call(this)', NativeComponent);
+    this.__react_state = { revision: 0 };
     this.__rendered = rendered;
     this.__viewMounted = mounted;
     this.__viewUpdated = updated;
     this.__viewUnmounting = unmounting;
   }
 
-  @:noCompletion function __getRender()
-    return (switch __react_state {
-      case null: __snap();
-      case v: v;
-    }).vtree;
 
-  @:noCompletion function __snap():{ vtree: RenderResult }
-    return { vtree: __rendered.value };
-
-  @:keep @:noCompletion @:final function componentDidMount() {
+  @:keep @:noCompletion @:final function componentDidMount()
     if (__viewMounted != null) __viewMounted();
-  }
 
   @:keep @:noCompletion @:final function componentDidUpdate(_, _)
     if (__viewUpdated != null) __viewUpdated();
@@ -66,14 +59,33 @@ class ViewBase extends NativeComponent<{ vtree: RenderResult }, {}, ImplicitCont
     if (__viewUnmounting != null) __viewUnmounting();
   }
 
-  @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: RenderResult })
-    return __getRender() != next.vtree;
+  function __getRender()
+    return Observable.untracked(() -> (__rendered:ObservableObject<RenderResult>).getValue());
+
+  @:keep @:noCompletion @:final function shouldComponentUpdate(_, _)
+    return __last != __getRender();
 
   @:keep @:noCompletion @:final @:native('render') function reactRender() {
-    if (this.__binding == null) {
+    /*
+      Creating the binding in render is meh ...
+      Before, this was done in componentDidMount, but that means that children bind before parents which leads to
+      weird rendering order https://github.com/MVCoconut/coconut.react-dom/issues/8
+
+      Another seemingly good place would be the constructor,
+      but there are two issues with that:
+
+      1. Apparently the React Context is not yet available
+      2. I remember coming across a section in the React docs suggesting that React may well instantiate a view and yet
+         choose not to mount it (because concurrent mode can do wondrous things).
+
+      So all in all, this is the least troublesome place to wire up things (╯°□°)╯︵ ┻━┻
+
+      So long as the constructor of Binding doesn't mess with the state, it should actually be safe to do.
+    */
+    if (this.__binding == null)
       this.__binding = new Binding(this);
-    }
-    return switch __getRender() {
+
+    return switch __last = __getRender() {
       case js.Syntax.typeof(_) => 'undefined': null;
       case v: v;
     }
@@ -146,14 +158,15 @@ class ViewBase extends NativeComponent<{ vtree: RenderResult }, {}, ImplicitCont
   }
 }
 
-private class Binding {
+private class Binding {//TODO: try to make this an Invalidatable and use the actual Revision ... the last attempt led to infinite recursion though ¯\_(ツ)_/¯
 
   final target:ViewBase;
   final link:CallbackLink;
 
   public function new(target) @:privateAccess {
     this.target = target;
-    this.link = target.__rendered.bind(_ -> target.__react_setState(target.__snap()));
+    var first = true;
+    this.link = target.__rendered.bind(_ -> if (first) first = false else target.__react_setState({ revision: target.__react_state.revision + 1 }));
   }
 
   public function destroy()
