@@ -62,12 +62,6 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
     if (__viewUnmounting != null) __viewUnmounting();
   }
 
-  public function reactify() {
-    if (__rewrapped == null)
-      __rewrapped = cast react.React.createElement(cast Rewrapped, { target: this });
-    return __rewrapped;
-  }
-
   static function __init__() {
     #if react_devtools
     Object.defineProperty(untyped ViewBase.prototype, 'state', {
@@ -142,33 +136,4 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
       case js.Syntax.typeof(_) => 'undefined': null;
       case v: v;
     }
-}
-
-@:access(coconut.react.ViewBase)
-private class Rewrapped extends NativeComponent<{}, { target: ViewBase }, {}> implements Invalidatable {
-
-  function observable():ObservableObject<RenderResult>
-    return __react_props.target.__rendered;
-
-  @:keep function componentDidMount() {
-    __react_props.target.componentDidMount();
-    link = observable().onInvalidate(this);
-  }
-
-  @:keep function componentDidUpdate(_, _)
-    __react_props.target.componentDidUpdate(null, null);
-
-  @:keep function componentWillUnmount() {
-    link.cancel();
-    __react_props.target.componentWillUnmount();
-  }
-
-  var link:CallbackLink;
-
-  public function invalidate()
-    __react_forceUpdate();
-
-  @:keep function render()
-    return observable().getValue();
-
 }
