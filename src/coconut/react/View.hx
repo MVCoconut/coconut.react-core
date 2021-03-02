@@ -8,8 +8,6 @@ import js.lib.Object;
 
 using tink.CoreApi;
 
-private typedef Render = Lazy<RenderResult>;//without this some part of the react component macro seems to hang
-
 @:build(coconut.ui.macros.ViewBuilder.build((_:coconut.react.RenderResult)))
 @:autoBuild(coconut.react.View.autoBuild())
 class View extends ViewBase {
@@ -21,14 +19,13 @@ class View extends ViewBase {
     return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
 
-class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
+class ViewBase extends NativeComponent<{ vtree: RenderResult }, {}, ImplicitContext> {
 
   @:noCompletion var __rendered:Observable<RenderResult>;
-  @:noCompletion var __link:CallbackLink;
+  @:noCompletion var __binding:Binding;
   @:noCompletion var __viewMounted:Void->Void;
   @:noCompletion var __viewUpdated:Void->Void;
   @:noCompletion var __viewUnmounting:Void->Void;
-  @:noCompletion var __rewrapped:RenderResult;
 
   public function new(
     rendered:Observable<RenderResult>,
@@ -37,20 +34,17 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
     unmounting:Void->Void
   ) {
     js.Syntax.code('{0}.call(this)', NativeComponent);
+    this.__rendered = rendered;
     this.__react_state = __snap();
-
-    __rendered = rendered;
-
     this.__viewMounted = mounted;
     this.__viewUpdated = updated;
     this.__viewUnmounting = unmounting;
   }
 
-  @:noCompletion function __snap():{ vtree: Render }
-    return { vtree: function () return __rendered.value };
+  @:noCompletion function __snap():{ vtree: RenderResult }
+    return { vtree: Observable.untracked(() -> __rendered.value) };
 
   @:keep @:noCompletion @:final function componentDidMount() {
-    __link = __rendered.bind(function (_) __react_setState(__snap()));//not my most glorious moment ... a better solution would probably be to poll in render and forceUpdate when becameInvalid
     if (__viewMounted != null) __viewMounted();
   }
 
@@ -58,8 +52,26 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
     if (__viewUpdated != null) __viewUpdated();
 
   @:keep @:noCompletion @:final function componentWillUnmount() {
-    __link.cancel();
+    switch __binding {
+      case null:
+      case v:
+        __binding = null;
+        v.destroy();
+    }
     if (__viewUnmounting != null) __viewUnmounting();
+  }
+
+  @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: RenderResult })
+    return __react_state.vtree != next.vtree;
+
+  @:keep @:noCompletion @:final @:native('render') function reactRender() {
+    if (this.__binding == null) {
+      this.__binding = new Binding(this);
+    }
+    return switch this.__react_state.vtree {
+      case js.Syntax.typeof(_) => 'undefined': null;
+      case v: v;
+    }
   }
 
   static function __init__() {
@@ -127,13 +139,23 @@ class ViewBase extends NativeComponent<{ vtree: Render }, {}, ImplicitContext> {
       }
     });
   }
+}
 
-  @:keep @:noCompletion @:final function shouldComponentUpdate(_, next:{ vtree: Render })
-    return __react_state.vtree.get() != next.vtree.get();
+private class Binding {
 
-  @:keep @:noCompletion @:final @:native('render') function reactRender()
-    return switch this.__react_state.vtree.get() {
-      case js.Syntax.typeof(_) => 'undefined': null;
-      case v: v;
-    }
+  final target:ViewBase;
+  final link:CallbackLink;
+
+  public function new(target) @:privateAccess {
+    this.target = target;
+    this.link = target.__rendered.bind(_ -> target.__react_setState(target.__snap()));
+  }
+
+  public function destroy()
+    this.link.cancel();
+
+  #if tink_state.debug
+  @:keep function toString():String
+    return 'Binding';
+  #end
 }
