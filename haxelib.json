@@ -10,8 +10,8 @@
 		"kevinresol",
 		"back2dos"
 	],
-	"version": "0.2.2",
-	"releasenote": "Remove tink_lang dependency.",
+	"version": "0.3.0",
+	"releasenote": "Support latest version of tink_state and fixed various bugs",
 	"tags": [
 		"coconut",
 		"react"
