@@ -30,7 +30,7 @@ class Issue26 {
 class Root extends View {
 
   @:attr var value:Value<Vector<Obj>, Vector<Obj>> = new Value({
-    raw: new State(([{foo: 'bar'}]:Vector<Obj>)),
+    raw: new State(([({foo: 'bar'}:Obj)]:Vector<Obj>)),
     parse: Success,
   });
 
