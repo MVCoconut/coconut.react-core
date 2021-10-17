@@ -133,7 +133,7 @@ class ViewBase extends NativeComponent<{ revision: Int }, {}, ImplicitContext> {
           var actual = Reflect.copy(attr);
 
           for (f in Reflect.fields(actual)) {
-            var o:Observable.ObservableObject<Dynamic> = Reflect.field(actual, f);
+            var o:ObservableObject<Dynamic> = Reflect.field(actual, f);
             if (!Reflect.isFunction(o.getValue))
               Reflect.setField(actual, f, Observable.const(o));
           }
