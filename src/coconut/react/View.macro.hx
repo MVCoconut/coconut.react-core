@@ -156,14 +156,9 @@ class View {
       #if react_devtools
       @:keep @:noCompletion var __stateMap:{};
       #end
-      static public function fromHxx(hxxMeta:$hxxMeta, attributes:$attributes):coconut.ui.RenderResult
-        return {
-          $magic: coconut.react.View.TRE,
-          type: $reactType,
-          props: attributes,
-          key: hxxMeta.key,
-          ref: if (!cast hxxMeta.ref) null else hxxMeta.ref,
-        }
+      static public function fromHxx(attributes:$attributes & $hxxMeta):coconut.ui.RenderResult
+        return react.React.createElement($reactType, attributes);
+
     });
 
     parametrize(added[added.length - 1], cls);
