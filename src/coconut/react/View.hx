@@ -158,16 +158,19 @@ class ViewBase extends NativeComponent<{ revision: Int }, {}, ImplicitContext> {
   }
 }
 
-private class Binding {//TODO: try to make this an Invalidatable and use the actual Revision ... the last attempt led to infinite recursion though ¯\_(ツ)_/¯
+private class Binding implements Invalidatable {//TODO: try to make this an Invalidatable and use the actual Revision ... the last attempt led to infinite recursion though ¯\_(ツ)_/¯
 
   final target:ViewBase;
   final link:CallbackLink;
 
   public function new(target) @:privateAccess {
     this.target = target;
-    var first = true;
-    this.link = target.__rendered.bind(_ -> if (first) first = false else target.__react_setState({ revision: target.__react_state.revision + 1 }));
+    // var first = true;
+    this.link = (target.__rendered:ObservableObject<RenderResult>).onInvalidate(this);
   }
+
+  public function invalidate()
+    @:privateAccess target.__react_setState({ revision: target.__react_state.revision + 1 });
 
   public function destroy()
     this.link.cancel();
