@@ -60,7 +60,7 @@ class ViewBase extends NativeComponent<{ revision: Int }, {}, ImplicitContext> {
   }
 
   function __getRender()
-    return Observable.untracked(() -> (__rendered:ObservableObject<RenderResult>).getValue());
+    return Observable.untracked(() -> __rendered.value);
 
   @:keep @:noCompletion @:final function shouldComponentUpdate(_, _)
     return __last != __getRender();
