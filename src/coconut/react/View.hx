@@ -33,6 +33,9 @@ class ViewBase extends NativeComponent<{ revision: Int }, {}, ImplicitContext> {
     mounted:Void->Void,
     updated:Void->Void,
     unmounting:Void->Void
+    #if tink_state.debug
+      , ?toString:()->String
+    #end
   ) {
     js.Syntax.code('{0}.call(this)', NativeComponent);
     this.__react_state = { revision: 0 };
