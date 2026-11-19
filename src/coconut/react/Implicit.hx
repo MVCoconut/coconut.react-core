@@ -19,7 +19,16 @@ class Implicit extends NativeComponent<{}, Attr, ImplicitContext> {
     return h(contextType.Provider, { value: this.context }, View.createFragment({}, __react_props.children));
   }
 
-  @:keep static final contextType = react.React.createContext(new ImplicitContext());
+  @:keep static var contextType:react.ReactContext<ImplicitContext>;
+  static var _contextType:react.ReactContext<ImplicitContext>;
+
+  static function boot(cls:Dynamic) {
+    js.lib.Object.defineProperty(cls, 'contextType', {
+      get: () -> _contextType ??= react.React.createContext(new ImplicitContext())
+    });
+  }
+
+  static function __init__() boot(Implicit);
 
   static public function fromHxx(attr:Attr)
     return h(cast Implicit, attr);

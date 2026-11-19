@@ -166,13 +166,16 @@ class View {
     parametrize(fromHxx, cls);
 
   }
+  static function self() {
+    return macro $i{Context.getLocalClass().get().name};
+  }
   static function autoBuild()
     return ViewBuilder.autoBuild({
       renders: macro : coconut.react.RenderResult,
       implicits: {
         name: '__react_context',
         fields: (macro class {
-          @:keep static final contextType = @:privateAccess coconut.react.Implicit.contextType;
+          static function __init__() @:privateAccess coconut.react.Implicit.boot(${self.bounce()});
         }).fields,
       },
       afterBuild: afterBuild,
