@@ -19,6 +19,9 @@ class View extends ViewBase {
     return (cast react.React.createElement).apply(null, [react.Fragment, attr].concat(cast children));
 }
 
+// coconut.ui may construct a view with `new()` and pass what the constructor takes to `__initViewBase` later
+// (`@:coconut.viewbase.lateInit`), so that a view's constructor can call `super()` before anything else
+@:coconut.viewbase.lateInit
 class ViewBase extends NativeComponent<{ revision: Int }, {}, ImplicitContext> {
 
   @:noCompletion var __rendered:Observable<RenderResult>;
@@ -29,13 +32,26 @@ class ViewBase extends NativeComponent<{ revision: Int }, {}, ImplicitContext> {
   @:noCompletion var __last:RenderResult;
 
   public function new(
+    ?rendered:Observable<RenderResult>,
+    ?mounted:Void->Void,
+    ?updated:Void->Void,
+    ?unmounting:Void->Void
+  ) {
+    // (ES6: Haxe calls the extern's constructor itself, which declares none)
+    #if (js_es < 6) js.Syntax.code('{0}.call(this)', NativeComponent); #end
+    this.__react_state = { revision: 0 };
+    this.__rendered = rendered;
+    this.__viewMounted = mounted;
+    this.__viewUpdated = updated;
+    this.__viewUnmounting = unmounting;
+  }
+
+  @:noCompletion function __initViewBase(
     rendered:Observable<RenderResult>,
     mounted:Void->Void,
     updated:Void->Void,
     unmounting:Void->Void
   ) {
-    js.Syntax.code('{0}.call(this)', NativeComponent);
-    this.__react_state = { revision: 0 };
     this.__rendered = rendered;
     this.__viewMounted = mounted;
     this.__viewUpdated = updated;
